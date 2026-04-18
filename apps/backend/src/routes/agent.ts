@@ -47,6 +47,8 @@ agentRouter.post('/research/:tripId', async (req, res) => {
     const itinerary = await synthesizeItinerary(
       {
         destination: trip.destination,
+        startDate: trip.startDate,
+        endDate: trip.endDate,
         searchResults: searchResults.results,
         scrapedData: scraped,
         weather,

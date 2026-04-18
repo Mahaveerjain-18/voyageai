@@ -67,6 +67,7 @@ export interface WalletBalance {
   balanceUsdc: string;
   walletAddress: string;
   chain: string;
+  promoCredits?: string;
 }
 
 // ─── API Functions ───────────────────────────────────────────

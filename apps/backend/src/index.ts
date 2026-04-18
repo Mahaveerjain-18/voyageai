@@ -1,8 +1,13 @@
+import dotenv from 'dotenv';
+import path from 'path';
+
+// Load .env BEFORE any service imports read process.env
+dotenv.config({ path: path.resolve(__dirname, '..', '.env') });
+
 import express from 'express';
 import cors from 'cors';
 import http from 'http';
 import { WebSocketServer } from 'ws';
-import dotenv from 'dotenv';
 
 import { healthRouter } from './routes/health';
 import { tripRouter } from './routes/trips';
@@ -11,8 +16,6 @@ import { walletRouter } from './routes/wallet';
 import { auditRouter } from './routes/audit';
 import { agentRouter } from './routes/agent';
 import { AuditLogger } from './services/auditLogger';
-
-dotenv.config();
 
 const app = express();
 const PORT = parseInt(process.env.PORT || '8080', 10);
