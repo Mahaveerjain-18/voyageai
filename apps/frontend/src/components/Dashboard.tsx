@@ -56,7 +56,7 @@ export function Dashboard({ tripId, onBack }: DashboardProps) {
     return () => clearInterval(interval);
   }, [refreshData]);
 
-  const withAction = async (fn: () => Promise<void>) => {
+  const withAction = async (fn: () => Promise<any>) => {
     setLoading(true);
     await fn();
     await refreshData();

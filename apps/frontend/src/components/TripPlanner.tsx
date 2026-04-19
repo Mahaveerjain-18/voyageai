@@ -300,199 +300,213 @@ export function TripPlanner({ onTripCreated, onBack }: TripPlannerProps) {
       {/* ───── Step 2: Budget ───── */}
       {step === "budget" && (
         <div className="slide-up">
-          <p style={{
-            fontSize: "0.7rem",
-            fontFamily: "var(--font-mono)",
-            letterSpacing: "0.15em",
-            textTransform: "uppercase",
-            color: "var(--accent)",
-            marginBottom: 12,
-            fontWeight: 600,
-          }}>
-            STEP 02
-          </p>
+          <AnimatedSlideIn delay={0} as="div">
+            <p style={{
+              fontSize: "0.7rem",
+              fontFamily: "var(--font-mono)",
+              letterSpacing: "0.15em",
+              textTransform: "uppercase",
+              color: "var(--accent)",
+              marginBottom: 12,
+              fontWeight: 600,
+            }}>
+              STEP 02
+            </p>
+          </AnimatedSlideIn>
 
-          <h2 style={{
-            fontFamily: "var(--font-serif)",
-            fontSize: "2.2rem",
-            fontWeight: 400,
-            fontStyle: "italic",
-            lineHeight: 1.2,
-            marginBottom: 12,
-          }}>
-            Set your spending limits.
-          </h2>
+          <AnimatedSlideIn delay={100} as="div">
+            <h2 style={{
+              fontFamily: "var(--font-serif)",
+              fontSize: "2.2rem",
+              fontWeight: 400,
+              fontStyle: "italic",
+              lineHeight: 1.2,
+              marginBottom: 12,
+            }}>
+              Set your spending limits.
+            </h2>
+          </AnimatedSlideIn>
 
-          <p style={{
-            color: "var(--text-secondary)",
-            fontSize: "0.95rem",
-            lineHeight: 1.6,
-            marginBottom: 40,
-            maxWidth: 480,
-          }}>
-            The AI agent can never exceed these limits.
-            Every dollar is governed on chain.
-          </p>
+          <AnimatedSlideIn delay={200} as="div">
+            <p style={{
+              color: "var(--text-secondary)",
+              fontSize: "0.95rem",
+              lineHeight: 1.6,
+              marginBottom: 40,
+              maxWidth: 480,
+            }}>
+              The AI agent can never exceed these limits.
+              Every dollar is governed on chain.
+            </p>
+          </AnimatedSlideIn>
 
           <div style={{ display: "flex", flexDirection: "column", gap: 28 }}>
             {/* Category sliders */}
-            <div>
-              <h3 style={{
-                fontFamily: "var(--font-serif)",
-                fontSize: "1.3rem",
-                color: "var(--text-primary)",
-                marginBottom: 16,
-                fontWeight: 400
-              }}>
-                Allocate your travel funds
-              </h3>
-
-              {form.totalBudget >= 10000 ? (
-                <div style={{
-                  padding: "24px",
-                  background: "rgba(255, 255, 255, 0.05)",
-                  border: "1px dashed rgba(255, 255, 255, 0.3)",
-                  borderRadius: 14,
-                  textAlign: "center"
+            <AnimatedSlideIn delay={300} as="div">
+              <div>
+                <h3 style={{
+                  fontFamily: "var(--font-serif)",
+                  fontSize: "1.3rem",
+                  color: "var(--text-primary)",
+                  marginBottom: 16,
+                  fontWeight: 400
                 }}>
-                  <p style={{
-                    color: "var(--accent)", 
-                    fontFamily: "var(--font-mono)", 
-                    fontSize: "0.85rem",
-                    letterSpacing: "0.05em",
-                    textTransform: "uppercase",
-                    marginBottom: 8
-                  }}>✨ Luxury Mode Unlocked</p>
-                  <p style={{ color: "var(--text-secondary)", fontSize: "0.9rem" }}>
-                    Category limits are ignored. The AI agent will plan an ultra-premium, unlimited 5-star experience.
-                  </p>
-                </div>
-              ) : (
-                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
-                  {([
-                    { key: "maxFlight" as const, label: "Flights", icon: "✈️" },
-                    { key: "maxHotel" as const, label: "Hotels", icon: "🏨" },
-                    { key: "maxActivities" as const, label: "Activities", icon: "🎯" },
-                    { key: "maxFood" as const, label: "Food & Dining", icon: "🍱" },
-                  ]).map(({ key, label, icon }) => (
-                    <div key={key} style={{
-                      padding: "20px 22px",
-                      background: "var(--bg-card)",
-                      border: "1px solid var(--border)",
-                      borderRadius: 14,
-                    }}>
-                      <div style={{
-                        display: "flex",
-                        justifyContent: "space-between",
-                        alignItems: "center",
-                        marginBottom: 12,
-                      }}>
-                        <span style={{
-                          fontSize: "0.88rem",
-                          color: "var(--text-secondary)",
-                          display: "flex",
-                          alignItems: "center",
-                          gap: 8,
+                  Allocate your travel funds
+                </h3>
+
+                {form.totalBudget >= 10000 ? (
+                  <div style={{
+                    padding: "24px",
+                    background: "rgba(255, 255, 255, 0.05)",
+                    border: "1px dashed rgba(255, 255, 255, 0.3)",
+                    borderRadius: 14,
+                    textAlign: "center"
+                  }}>
+                    <p style={{
+                      color: "var(--accent)", 
+                      fontFamily: "var(--font-mono)", 
+                      fontSize: "0.85rem",
+                      letterSpacing: "0.05em",
+                      textTransform: "uppercase",
+                      marginBottom: 8
+                    }}>✨ Luxury Mode Unlocked</p>
+                    <p style={{ color: "var(--text-secondary)", fontSize: "0.9rem" }}>
+                      Category limits are ignored. The AI agent will plan an ultra-premium, unlimited 5-star experience.
+                    </p>
+                  </div>
+                ) : (
+                  <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
+                    {([
+                      { key: "maxFlight" as const, label: "Flights", icon: "✈️" },
+                      { key: "maxHotel" as const, label: "Hotels", icon: "🏨" },
+                      { key: "maxActivities" as const, label: "Activities", icon: "🎯" },
+                      { key: "maxFood" as const, label: "Food & Dining", icon: "🍱" },
+                    ]).map(({ key, label, icon }, idx) => (
+                      <AnimatedSlideIn key={key} delay={400 + idx * 100} as="div">
+                        <div style={{
+                          padding: "20px 22px",
+                          background: "var(--bg-card)",
+                          border: "1px solid var(--border)",
+                          borderRadius: 14,
                         }}>
-                          <span style={{ fontSize: "1.1rem" }}>{icon}</span>
-                          {label}
-                        </span>
-                        <span style={{
-                          fontFamily: "var(--font-mono)",
-                          fontSize: "0.95rem",
-                          fontWeight: 700,
-                          color: "var(--text-primary)",
-                        }}>
-                          ${form[key]}
-                        </span>
-                      </div>
-                      <input
-                        type="range"
-                        min={0} max={10000} step={50}
-                        value={form[key]}
-                        onChange={(e) => {
-                          const val = parseInt(e.target.value);
-                          const newForm = { ...form, [key]: val };
-                          const sum = newForm.maxFlight + newForm.maxHotel + newForm.maxActivities + newForm.maxFood;
-                          setForm({ ...newForm, totalBudget: sum });
-                        }}
-                        style={{ width: "100%" }}
-                      />
-                    </div>
-                  ))}
-                </div>
-              )}
-            </div>
+                          <div style={{
+                            display: "flex",
+                            justifyContent: "space-between",
+                            alignItems: "center",
+                            marginBottom: 12,
+                          }}>
+                            <span style={{
+                              fontSize: "0.88rem",
+                              color: "var(--text-secondary)",
+                              display: "flex",
+                              alignItems: "center",
+                              gap: 8,
+                            }}>
+                              <span style={{ fontSize: "1.1rem" }}>{icon}</span>
+                              {label}
+                            </span>
+                            <span style={{
+                              fontFamily: "var(--font-mono)",
+                              fontSize: "0.95rem",
+                              fontWeight: 700,
+                              color: "var(--text-primary)",
+                            }}>
+                              ${form[key]}
+                            </span>
+                          </div>
+                          <input
+                            type="range"
+                            min={0} max={10000} step={50}
+                            value={form[key]}
+                            onChange={(e) => {
+                              const val = parseInt(e.target.value);
+                              const newForm = { ...form, [key]: val };
+                              const sum = newForm.maxFlight + newForm.maxHotel + newForm.maxActivities + newForm.maxFood;
+                              setForm({ ...newForm, totalBudget: sum });
+                            }}
+                            style={{ width: "100%" }}
+                          />
+                        </div>
+                      </AnimatedSlideIn>
+                    ))}
+                  </div>
+                )}
+              </div>
+            </AnimatedSlideIn>
 
             {/* Total budget */}
-            <div style={{
-              padding: "24px 28px",
-              background: "var(--bg-card)",
-              border: "1px solid var(--border)",
-              borderRadius: 16,
-            }}>
-              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 16 }}>
-                <span style={{
-                  fontFamily: "var(--font-serif)",
-                  fontSize: "1.1rem",
-                  color: "var(--text-primary)",
-                }}>
-                  Total Budget
-                </span>
-                <span style={{
-                  fontFamily: "var(--font-mono)",
-                  fontSize: "1.5rem",
-                  fontWeight: 700,
-                  color: "var(--accent)",
-                }}>
-                  ${form.totalBudget >= 10000 ? "10000+" : form.totalBudget}
-                </span>
-              </div>
-              <input
-                type="range"
-                min={500} max={10000} step={100}
-                value={form.totalBudget}
-                onChange={(e) => {
-                  const newTotal = parseInt(e.target.value);
-                  const oldTotal = form.maxFlight + form.maxHotel + form.maxActivities + form.maxFood;
-                  const ratio = oldTotal > 0 ? newTotal / oldTotal : 1;
-                  setForm({
-                    ...form,
-                    totalBudget: newTotal,
-                    maxFlight: Math.round(form.maxFlight * ratio),
-                    maxHotel: Math.round(form.maxHotel * ratio),
-                    maxActivities: Math.round(form.maxActivities * ratio),
-                    maxFood: Math.round(form.maxFood * ratio),
-                  });
-                }}
-                style={{ width: "100%" }}
-              />
+            <AnimatedSlideIn delay={800} as="div">
               <div style={{
-                display: "flex",
-                justifyContent: "space-between",
-                marginTop: 8,
+                padding: "24px 28px",
+                background: "var(--bg-card)",
+                border: "1px solid var(--border)",
+                borderRadius: 16,
               }}>
-                <span style={rangeLabel}>$500</span>
-                <span style={{ ...rangeLabel, color: "var(--text-muted)" }}>USDC on Base</span>
-                <span style={rangeLabel}>$10000+</span>
+                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 16 }}>
+                  <span style={{
+                    fontFamily: "var(--font-serif)",
+                    fontSize: "1.1rem",
+                    color: "var(--text-primary)",
+                  }}>
+                    Total Budget
+                  </span>
+                  <span style={{
+                    fontFamily: "var(--font-mono)",
+                    fontSize: "1.5rem",
+                    fontWeight: 700,
+                    color: "var(--accent)",
+                  }}>
+                    ${form.totalBudget >= 10000 ? "10000+" : form.totalBudget}
+                  </span>
+                </div>
+                <input
+                  type="range"
+                  min={500} max={10000} step={100}
+                  value={form.totalBudget}
+                  onChange={(e) => {
+                    const newTotal = parseInt(e.target.value);
+                    const oldTotal = form.maxFlight + form.maxHotel + form.maxActivities + form.maxFood;
+                    const ratio = oldTotal > 0 ? newTotal / oldTotal : 1;
+                    setForm({
+                      ...form,
+                      totalBudget: newTotal,
+                      maxFlight: Math.round(form.maxFlight * ratio),
+                      maxHotel: Math.round(form.maxHotel * ratio),
+                      maxActivities: Math.round(form.maxActivities * ratio),
+                      maxFood: Math.round(form.maxFood * ratio),
+                    });
+                  }}
+                  style={{ width: "100%" }}
+                />
+                <div style={{
+                  display: "flex",
+                  justifyContent: "space-between",
+                  marginTop: 8,
+                }}>
+                  <span style={rangeLabel}>$500</span>
+                  <span style={{ ...rangeLabel, color: "var(--text-muted)" }}>USDC on Base</span>
+                  <span style={rangeLabel}>$10000+</span>
+                </div>
               </div>
-            </div>
+            </AnimatedSlideIn>
 
             {/* Actions */}
-            <div style={{ display: "flex", gap: 12 }}>
-              <button
-                onClick={() => setStep("details")}
-                style={btnSecondaryStyle}
-              >
-                ← Back
-              </button>
-              <button
-                onClick={handleBudgetSubmit}
-                disabled={loading}
-                style={{ ...btnPrimaryStyle, flex: 1, opacity: loading ? 0.5 : 1 }}
-              >
-                {loading ? "Creating trip..." : "Create trip & fund →"}
-              </button>
+            <div className="slide-up" style={{ animationDelay: "0.5s", animationFillMode: "both" }}>
+              <div style={{ display: "flex", gap: 12 }}>
+                <button
+                  onClick={() => setStep("details")}
+                  style={btnSecondaryStyle}
+                >
+                  ← Back
+                </button>
+                <button
+                  onClick={handleBudgetSubmit}
+                  disabled={loading}
+                  style={{ ...btnPrimaryStyle, flex: 1, opacity: loading ? 0.5 : 1 }}
+                >
+                  {loading ? "Creating trip..." : "Create trip & fund →"}
+                </button>
+              </div>
             </div>
           </div>
         </div>
@@ -501,149 +515,161 @@ export function TripPlanner({ onTripCreated, onBack }: TripPlannerProps) {
       {/* ───── Step 3: Fund ───── */}
       {step === "funding" && (
         <div className="slide-up" style={{ textAlign: "center", paddingTop: 24 }}>
-          <p style={{
-            fontSize: "0.7rem",
-            fontFamily: "var(--font-mono)",
-            letterSpacing: "0.15em",
-            textTransform: "uppercase",
-            color: "var(--accent)",
-            marginBottom: 12,
-            fontWeight: 600,
-          }}>
-            STEP 03
-          </p>
+          <AnimatedSlideIn delay={0} as="div">
+            <p style={{
+              fontSize: "0.7rem",
+              fontFamily: "var(--font-mono)",
+              letterSpacing: "0.15em",
+              textTransform: "uppercase",
+              color: "var(--accent)",
+              marginBottom: 12,
+              fontWeight: 600,
+            }}>
+              STEP 03
+            </p>
+          </AnimatedSlideIn>
 
-          <h2 style={{
-            fontFamily: "var(--font-serif)",
-            fontSize: "2.2rem",
-            fontWeight: 400,
-            fontStyle: "italic",
-            lineHeight: 1.2,
-            marginBottom: 12,
-          }}>
-            Fund your trip.
-          </h2>
+          <AnimatedSlideIn delay={100} as="div">
+            <h2 style={{
+              fontFamily: "var(--font-serif)",
+              fontSize: "2.2rem",
+              fontWeight: 400,
+              fontStyle: "italic",
+              lineHeight: 1.2,
+              marginBottom: 12,
+            }}>
+              Fund your trip.
+            </h2>
+          </AnimatedSlideIn>
 
-          <p style={{
-            color: "var(--text-secondary)",
-            fontSize: "0.95rem",
-            lineHeight: 1.6,
-            marginBottom: 40,
-            maxWidth: 420,
-            margin: "0 auto 40px",
-          }}>
-            USDC goes into a time-locked escrow subwallet.
-            Auto-refund if cancelled.
-          </p>
+          <AnimatedSlideIn delay={200} as="div">
+            <p style={{
+              color: "var(--text-secondary)",
+              fontSize: "0.95rem",
+              lineHeight: 1.6,
+              marginBottom: 40,
+              maxWidth: 420,
+              margin: "0 auto 40px",
+            }}>
+              USDC goes into a time-locked escrow subwallet.
+              Auto-refund if cancelled.
+            </p>
+          </AnimatedSlideIn>
 
           {/* Checkout card */}
-          <div style={{
-            maxWidth: 420,
-            margin: "0 auto",
-            padding: "40px 36px",
-            background: "var(--bg-card)",
-            border: "1px solid var(--border)",
-            borderRadius: 20,
-            textAlign: "center",
-          }}>
-            {/* Locus badge */}
+          <AnimatedSlideIn delay={300} as="div">
             <div style={{
-              display: "inline-flex",
-              alignItems: "center",
-              gap: 8,
-              padding: "6px 14px",
-              background: "rgba(255, 255, 255, 0.08)",
-              border: "1px solid rgba(255, 255, 255, 0.2)",
-              borderRadius: 8,
-              marginBottom: 28,
+              maxWidth: 420,
+              margin: "0 auto",
+              padding: "40px 36px",
+              background: "var(--bg-card)",
+              border: "1px solid var(--border)",
+              borderRadius: 20,
+              textAlign: "center",
             }}>
-              <span style={{
-                width: 6,
-                height: 6,
-                background: "var(--accent)",
-                borderRadius: "50%",
-                animation: "pulse 2s infinite",
-              }} />
-              <span style={{
-                fontFamily: "var(--font-mono)",
-                fontSize: "0.7rem",
-                fontWeight: 600,
-                color: "var(--accent)",
-                letterSpacing: "0.08em",
-                textTransform: "uppercase",
+              {/* Locus badge */}
+              <div style={{
+                display: "inline-flex",
+                alignItems: "center",
+                gap: 8,
+                padding: "6px 14px",
+                background: "rgba(255, 255, 255, 0.08)",
+                border: "1px solid rgba(255, 255, 255, 0.2)",
+                borderRadius: 8,
+                marginBottom: 28,
               }}>
-                Locus Checkout
-              </span>
-            </div>
-
-            {/* Amount */}
-            <div style={{
-              fontFamily: "var(--font-mono)",
-              fontSize: "3rem",
-              fontWeight: 700,
-              color: "var(--text-primary)",
-              marginBottom: 4,
-              letterSpacing: "-0.02em",
-            }}>
-              ${form.totalBudget}<span style={{ fontSize: "1.2rem", color: "var(--text-muted)" }}>.00</span>
-            </div>
-            <p style={{
-              fontFamily: "var(--font-mono)",
-              fontSize: "0.75rem",
-              color: "var(--text-faint)",
-              marginBottom: 32,
-              letterSpacing: "0.06em",
-            }}>
-              USDC on Base
-            </p>
-
-            <div style={{ display: "flex", flexDirection: "column", gap: 12, width: "100%" }}>
-              <button
-                onClick={handleFundTrip}
-                disabled={loading}
-                style={{
-                  ...btnPrimaryStyle,
-                  width: "100%",
-                  padding: "16px",
-                  fontSize: "1rem",
-                  opacity: loading ? 0.5 : 1,
-                }}
-              >
-                {loading ? "Processing..." : "Pay with USDC →"}
-              </button>
-              
-              <button
-                onClick={() => setStep("budget")}
-                disabled={loading}
-                style={{
-                  width: "100%",
-                  padding: "14px",
-                  fontSize: "0.9rem",
-                  background: "transparent",
-                  color: "var(--text-muted)",
-                  border: "1px solid var(--border)",
-                  borderRadius: "12px",
-                  cursor: loading ? "not-allowed" : "pointer",
-                  fontFamily: "'Inter', sans-serif",
+                <span style={{
+                  width: 6,
+                  height: 6,
+                  background: "var(--accent)",
+                  borderRadius: "50%",
+                  animation: "pulse 2s infinite",
+                }} />
+                <span style={{
+                  fontFamily: "var(--font-mono)",
+                  fontSize: "0.7rem",
                   fontWeight: 600,
-                  transition: "all 0.2s ease"
-                }}
-                onMouseOver={(e) => e.currentTarget.style.color = "var(--text-primary)"}
-                onMouseOut={(e) => e.currentTarget.style.color = "var(--text-muted)"}
-              >
-                ← Back to Budget
-              </button>
-            </div>
+                  color: "var(--accent)",
+                  letterSpacing: "0.08em",
+                  textTransform: "uppercase",
+                }}>
+                  Locus Checkout
+                </span>
+              </div>
 
-            <p style={{
-              fontFamily: "var(--font-mono)",
-              fontSize: "0.72rem",
-              color: "var(--text-faint)",
-              marginTop: 20,
-            }}>
-              {form.destination} · {form.startDate} → {form.endDate}
-            </p>
-          </div>
+              {/* Amount */}
+              <AnimatedSlideIn delay={500} as="div">
+                <div style={{
+                  fontFamily: "var(--font-mono)",
+                  fontSize: "3rem",
+                  fontWeight: 700,
+                  color: "var(--text-primary)",
+                  marginBottom: 4,
+                  letterSpacing: "-0.02em",
+                }}>
+                  ${form.totalBudget}<span style={{ fontSize: "1.2rem", color: "var(--text-muted)" }}>.00</span>
+                </div>
+              </AnimatedSlideIn>
+              <p style={{
+                fontFamily: "var(--font-mono)",
+                fontSize: "0.75rem",
+                color: "var(--text-faint)",
+                marginBottom: 32,
+                letterSpacing: "0.06em",
+              }}>
+                USDC on Base
+              </p>
+
+              <AnimatedSlideIn delay={600} as="div">
+                <div style={{ display: "flex", flexDirection: "column", gap: 12, width: "100%" }}>
+                  <button
+                    onClick={handleFundTrip}
+                    disabled={loading}
+                    style={{
+                      ...btnPrimaryStyle,
+                      width: "100%",
+                      padding: "16px",
+                      fontSize: "1rem",
+                      opacity: loading ? 0.5 : 1,
+                    }}
+                  >
+                    {loading ? "Processing..." : "Pay with USDC →"}
+                  </button>
+                  
+                  <button
+                    onClick={() => setStep("budget")}
+                    disabled={loading}
+                    style={{
+                      width: "100%",
+                      padding: "14px",
+                      fontSize: "0.9rem",
+                      background: "transparent",
+                      color: "var(--text-muted)",
+                      border: "1px solid var(--border)",
+                      borderRadius: "12px",
+                      cursor: loading ? "not-allowed" : "pointer",
+                      fontFamily: "'Inter', sans-serif",
+                      fontWeight: 600,
+                      transition: "all 0.2s ease"
+                    }}
+                    onMouseOver={(e) => e.currentTarget.style.color = "var(--text-primary)"}
+                    onMouseOut={(e) => e.currentTarget.style.color = "var(--text-muted)"}
+                  >
+                    ← Back to Budget
+                  </button>
+                </div>
+              </AnimatedSlideIn>
+
+              <p style={{
+                fontFamily: "var(--font-mono)",
+                fontSize: "0.72rem",
+                color: "var(--text-faint)",
+                marginTop: 20,
+              }}>
+                {form.destination} · {form.startDate} → {form.endDate}
+              </p>
+            </div>
+          </AnimatedSlideIn>
         </div>
       )}
     </div>
