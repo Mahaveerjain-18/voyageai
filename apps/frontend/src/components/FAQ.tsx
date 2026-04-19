@@ -53,7 +53,7 @@ export function FAQ() {
           <AnimatedSlideIn delay={200}>
             <p className="section-subtext">
               Still have something we didn&apos;t cover? The agent can probably
-              handle it — every trip prompt is open-ended.
+              handle it ,every trip prompt is open-ended.
             </p>
           </AnimatedSlideIn>
         </div>

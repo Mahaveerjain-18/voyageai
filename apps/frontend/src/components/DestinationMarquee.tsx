@@ -70,7 +70,7 @@ export function DestinationMarquee() {
           <AnimatedHeading
             style={{ textAlign: "center", maxWidth: 600, margin: "0 auto" }}
             segments={[
-              { text: "Where will your agent " },
+              { text: "   Where will your agent     " },
               { text: "take you?", italic: true }
             ]}
           />
