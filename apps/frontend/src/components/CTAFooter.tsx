@@ -8,11 +8,12 @@ export function CTAFooter({ onStart }: CTAFooterProps) {
   return (
     <section className="section" style={{ paddingBottom: 120 }}>
       <div className="container" style={{ textAlign: "center" }}>
-        <h2 className="cta-heading">
-          Your&nbsp;entire&nbsp;trip,&nbsp;planned&nbsp;and<br />booked&nbsp;autonomously.
+        <h2 className="cta-heading" style={{ textAlign: "center", margin: "0 auto", lineHeight: 1.2, paddingBottom: 20, maxWidth: "1200px" }}>
+          Your entire trip, planned and <br />
+          booked autonomously.
         </h2>
 
-        <p style={{ color: "var(--text-secondary)", fontSize: "1rem", maxWidth: 520, margin: "0 auto 36px", lineHeight: 1.7 }}>
+        <p style={{ color: "var(--text-secondary)", fontSize: "1rem", maxWidth: 600, margin: "0 auto 36px", lineHeight: 1.7 }}>
           Fund your escrow wallet instantly with USDC on Base. Let the AI agent research itineraries, present options, and finalize bookings. Cancel anytime for a seamless refund.
         </p>
 
