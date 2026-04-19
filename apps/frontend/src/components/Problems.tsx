@@ -27,8 +27,8 @@ export function Problems() {
       <div className="container">
         <p className="section-label">THE PROBLEM</p>
         <h2 className="section-heading" style={{ maxWidth: 700 }}>
-          Vacation booking is broken in{" "}
-          <span className="italic">three</span> familiar ways.
+          Vacation booking is broken <br />
+          <span className="italic">in three familiar ways.</span>
         </h2>
 
         <div className="problem-grid">

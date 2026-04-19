@@ -154,6 +154,11 @@ export function Features() {
                   <div key={i} className="circuit-node">
                     <div className={`circuit-dot ${isActive ? 'active' : isPast ? 'past' : ''}`}>
                       {isActive && <div className="circuit-dot-glow" />}
+                      {isPast && (
+                        <svg className="circuit-tick" viewBox="0 0 24 24" fill="none" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round">
+                          <polyline points="20 6 9 17 4 12"></polyline>
+                        </svg>
+                      )}
                     </div>
                     <div className={`circuit-label ${isActive ? 'active' : ''}`}>{step}</div>
                   </div>
@@ -366,6 +371,27 @@ export function Features() {
           font-weight: 700;
           transform: translateY(2px) scale(1.1);
           text-shadow: 0 0 12px rgba(255, 255, 255, 0.4);
+        }
+
+        .circuit-tick {
+          position: absolute;
+          top: 50%;
+          left: 50%;
+          width: 10px;
+          height: 10px;
+          stroke: #ffffff; /* Pure white core for maximum contrast */
+          filter: drop-shadow(0 0 10px var(--accent)) drop-shadow(0 0 6px var(--accent)) drop-shadow(0 0 3px var(--accent));
+          animation: popTick 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+        }
+
+        .circuit-dot.active .circuit-tick {
+          stroke: #0a0a0a;
+          filter: none;
+        }
+
+        @keyframes popTick {
+          0% { transform: translate(-50%, -50%) scale(0); opacity: 0; }
+          100% { transform: translate(-50%, -50%) scale(1); opacity: 1; }
         }
 
         @media (max-width: 768px) {

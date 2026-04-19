@@ -14,7 +14,7 @@ const ROW_A = [
   { name: "Maldives",           img: "https://images.unsplash.com/photo-1514282401047-d79a71a590e8?w=800&q=80", tag: "🐚 Beach" },
   { name: "Paris, France",      img: "https://images.unsplash.com/photo-1502602898657-3e91760cbb34?w=800&q=80", tag: "🗼 Romance" },
   { name: "Swiss Alps",         img: "https://images.unsplash.com/photo-1531366936337-7c912a4589a7?w=800&q=80", tag: "⛷️ Mountains" },
-  { name: "Machu Picchu, Peru", img: "https://images.unsplash.com/photo-1587595431973-160d0d163571?w=800&q=80", tag: "🏔️ Adventure" },
+  { name: "Kyoto, Japan", img: "https://images.unsplash.com/photo-1493976040374-85c8e12f0c0e?w=800&q=80", tag: "🌸 Culture" },
   { name: "Dubai, UAE",         img: "https://images.unsplash.com/photo-1512453979798-5ea266f8880c?w=800&q=80", tag: "✨ Luxury" },
 ];
 

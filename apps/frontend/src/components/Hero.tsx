@@ -60,7 +60,7 @@ export function Hero({ onStartPlanning }: HeroProps) {
           display: "flex",
           justifyContent: "flex-end",
         }}>
-          <AgentDemo />
+          <AgentDemo onStartPlanning={onStartPlanning} />
         </div>
       </div>
     </section>

@@ -13,6 +13,7 @@ export function TripPlanner({ onTripCreated, onBack }: TripPlannerProps) {
   const [loading, setLoading] = useState(false);
 
   const [form, setForm] = useState({
+    origin: "",
     destination: "",
     startDate: "",
     endDate: "",
@@ -37,6 +38,7 @@ export function TripPlanner({ onTripCreated, onBack }: TripPlannerProps) {
     setLoading(true);
     try {
       const trip = await createTrip({
+        origin: form.origin,
         destination: form.destination,
         startDate: form.startDate,
         endDate: form.endDate,
@@ -73,10 +75,10 @@ export function TripPlanner({ onTripCreated, onBack }: TripPlannerProps) {
   };
 
   const stepIndex = ["details", "budget", "funding"].indexOf(step);
-  const canProceed = form.destination && form.startDate && form.endDate;
+  const canProceed = form.origin && form.destination && form.startDate && form.endDate;
 
   return (
-    <div style={{ maxWidth: 680, margin: "0 auto", padding: "48px 24px" }}>
+    <div style={{ maxWidth: 900, margin: "0 auto", padding: "48px 24px" }}>
       {/* Back button */}
       <button
         onClick={onBack}
@@ -166,26 +168,44 @@ export function TripPlanner({ onTripCreated, onBack }: TripPlannerProps) {
             maxWidth: 480,
           }}>
             Tell us your dream destination. The AI agent handles research,
-            booking, and payments — autonomously.
+            booking, and payments autonomously.
           </p>
 
           <div style={{ display: "flex", flexDirection: "column", gap: 24 }}>
-            {/* Destination */}
-            <div>
-              <label style={labelStyle}>Destination</label>
-              <input
-                type="text"
-                value={form.destination}
-                onChange={(e) => setForm({ ...form, destination: e.target.value })}
-                placeholder="e.g. Tokyo, Japan"
-                style={inputStyle}
-                onFocus={(e) => {
-                  e.currentTarget.style.borderColor = "rgba(200, 245, 71, 0.4)";
-                }}
-                onBlur={(e) => {
-                  e.currentTarget.style.borderColor = "rgba(255,255,255,0.08)";
-                }}
-              />
+            {/* Origin & Destination */}
+            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16 }}>
+              <div>
+                <label style={labelStyle}>Departing From</label>
+                <input
+                  type="text"
+                  value={form.origin}
+                  onChange={(e) => setForm({ ...form, origin: e.target.value })}
+                  placeholder="e.g. San Francisco"
+                  style={inputStyle}
+                  onFocus={(e) => {
+                    e.currentTarget.style.borderColor = "rgba(200, 245, 71, 0.4)";
+                  }}
+                  onBlur={(e) => {
+                    e.currentTarget.style.borderColor = "rgba(255,255,255,0.08)";
+                  }}
+                />
+              </div>
+              <div>
+                <label style={labelStyle}>Destination</label>
+                <input
+                  type="text"
+                  value={form.destination}
+                  onChange={(e) => setForm({ ...form, destination: e.target.value })}
+                  placeholder="e.g. Tokyo, Japan"
+                  style={inputStyle}
+                  onFocus={(e) => {
+                    e.currentTarget.style.borderColor = "rgba(200, 245, 71, 0.4)";
+                  }}
+                  onBlur={(e) => {
+                    e.currentTarget.style.borderColor = "rgba(255,255,255,0.08)";
+                  }}
+                />
+              </div>
             </div>
 
             {/* Date grid */}
@@ -241,6 +261,32 @@ export function TripPlanner({ onTripCreated, onBack }: TripPlannerProps) {
                 onFocus={(e) => { e.currentTarget.style.borderColor = "rgba(200, 245, 71, 0.4)"; }}
                 onBlur={(e) => { e.currentTarget.style.borderColor = "rgba(255,255,255,0.08)"; }}
               />
+              <div style={{ display: "flex", gap: "8px", flexWrap: "wrap", marginTop: "12px" }}>
+                {["Local Food", "Hidden Gems", "Nightlife", "Adventure", "Relaxation", "Museums", "Culture & History", "Nature", "Shopping", "Live Music"].map((tag) => (
+                  <button
+                    key={tag}
+                    onClick={() => {
+                        const separator = form.preferences && !form.preferences.endsWith(" ") ? ", " : "";
+                        setForm({ ...form, preferences: form.preferences + separator + tag });
+                    }}
+                    type="button"
+                    style={{
+                      background: "rgba(255,255,255,0.03)",
+                      border: "1px solid rgba(255,255,255,0.08)",
+                      borderRadius: "16px",
+                      padding: "5px 12px",
+                      fontSize: "0.72rem",
+                      color: "var(--text-secondary)",
+                      cursor: "pointer",
+                      transition: "all 0.2s"
+                    }}
+                    onMouseEnter={(e) => { e.currentTarget.style.color = "#fff"; e.currentTarget.style.borderColor = "var(--accent)"; }}
+                    onMouseLeave={(e) => { e.currentTarget.style.color = "var(--text-secondary)"; e.currentTarget.style.borderColor = "rgba(255,255,255,0.08)"; }}
+                  >
+                    + {tag}
+                  </button>
+                ))}
+              </div>
             </div>
 
             <button
@@ -293,10 +339,99 @@ export function TripPlanner({ onTripCreated, onBack }: TripPlannerProps) {
             maxWidth: 480,
           }}>
             The AI agent can never exceed these limits.
-            Every dollar is governed on-chain.
+            Every dollar is governed on chain.
           </p>
 
           <div style={{ display: "flex", flexDirection: "column", gap: 28 }}>
+            {/* Category sliders */}
+            <div>
+              <h3 style={{
+                fontFamily: "var(--font-serif)",
+                fontSize: "1.3rem",
+                color: "var(--text-primary)",
+                marginBottom: 16,
+                fontWeight: 400
+              }}>
+                Allocate your travel funds
+              </h3>
+
+              {form.totalBudget >= 10000 ? (
+                <div style={{
+                  padding: "24px",
+                  background: "rgba(200, 245, 71, 0.05)",
+                  border: "1px dashed rgba(200, 245, 71, 0.3)",
+                  borderRadius: 14,
+                  textAlign: "center"
+                }}>
+                  <p style={{
+                    color: "var(--accent)", 
+                    fontFamily: "var(--font-mono)", 
+                    fontSize: "0.85rem",
+                    letterSpacing: "0.05em",
+                    textTransform: "uppercase",
+                    marginBottom: 8
+                  }}>✨ Luxury Mode Unlocked</p>
+                  <p style={{ color: "var(--text-secondary)", fontSize: "0.9rem" }}>
+                    Category limits are ignored. The AI agent will plan an ultra-premium, unlimited 5-star experience.
+                  </p>
+                </div>
+              ) : (
+                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
+                  {([
+                    { key: "maxFlight" as const, label: "Flights", icon: "✈️" },
+                    { key: "maxHotel" as const, label: "Hotels", icon: "🏨" },
+                    { key: "maxActivities" as const, label: "Activities", icon: "🎯" },
+                    { key: "maxFood" as const, label: "Food & Dining", icon: "🍱" },
+                  ]).map(({ key, label, icon }) => (
+                    <div key={key} style={{
+                      padding: "20px 22px",
+                      background: "var(--bg-card)",
+                      border: "1px solid var(--border)",
+                      borderRadius: 14,
+                    }}>
+                      <div style={{
+                        display: "flex",
+                        justifyContent: "space-between",
+                        alignItems: "center",
+                        marginBottom: 12,
+                      }}>
+                        <span style={{
+                          fontSize: "0.88rem",
+                          color: "var(--text-secondary)",
+                          display: "flex",
+                          alignItems: "center",
+                          gap: 8,
+                        }}>
+                          <span style={{ fontSize: "1.1rem" }}>{icon}</span>
+                          {label}
+                        </span>
+                        <span style={{
+                          fontFamily: "var(--font-mono)",
+                          fontSize: "0.95rem",
+                          fontWeight: 700,
+                          color: "var(--text-primary)",
+                        }}>
+                          ${form[key]}
+                        </span>
+                      </div>
+                      <input
+                        type="range"
+                        min={0} max={10000} step={50}
+                        value={form[key]}
+                        onChange={(e) => {
+                          const val = parseInt(e.target.value);
+                          const newForm = { ...form, [key]: val };
+                          const sum = newForm.maxFlight + newForm.maxHotel + newForm.maxActivities + newForm.maxFood;
+                          setForm({ ...newForm, totalBudget: sum });
+                        }}
+                        style={{ width: "100%" }}
+                      />
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+
             {/* Total budget */}
             <div style={{
               padding: "24px 28px",
@@ -318,14 +453,26 @@ export function TripPlanner({ onTripCreated, onBack }: TripPlannerProps) {
                   fontWeight: 700,
                   color: "var(--accent)",
                 }}>
-                  ${form.totalBudget}
+                  ${form.totalBudget >= 10000 ? "10000+" : form.totalBudget}
                 </span>
               </div>
               <input
                 type="range"
                 min={500} max={10000} step={100}
                 value={form.totalBudget}
-                onChange={(e) => setForm({ ...form, totalBudget: parseInt(e.target.value) })}
+                onChange={(e) => {
+                  const newTotal = parseInt(e.target.value);
+                  const oldTotal = form.maxFlight + form.maxHotel + form.maxActivities + form.maxFood;
+                  const ratio = oldTotal > 0 ? newTotal / oldTotal : 1;
+                  setForm({
+                    ...form,
+                    totalBudget: newTotal,
+                    maxFlight: Math.round(form.maxFlight * ratio),
+                    maxHotel: Math.round(form.maxHotel * ratio),
+                    maxActivities: Math.round(form.maxActivities * ratio),
+                    maxFood: Math.round(form.maxFood * ratio),
+                  });
+                }}
                 style={{ width: "100%" }}
               />
               <div style={{
@@ -335,58 +482,8 @@ export function TripPlanner({ onTripCreated, onBack }: TripPlannerProps) {
               }}>
                 <span style={rangeLabel}>$500</span>
                 <span style={{ ...rangeLabel, color: "var(--text-muted)" }}>USDC on Base</span>
-                <span style={rangeLabel}>$10,000</span>
+                <span style={rangeLabel}>$10000+</span>
               </div>
-            </div>
-
-            {/* Category sliders */}
-            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
-              {([
-                { key: "maxFlight" as const, label: "Flights", icon: "✈️" },
-                { key: "maxHotel" as const, label: "Hotels", icon: "🏨" },
-                { key: "maxActivities" as const, label: "Activities", icon: "🎯" },
-                { key: "maxFood" as const, label: "Food & Dining", icon: "🍱" },
-              ]).map(({ key, label, icon }) => (
-                <div key={key} style={{
-                  padding: "20px 22px",
-                  background: "var(--bg-card)",
-                  border: "1px solid var(--border)",
-                  borderRadius: 14,
-                }}>
-                  <div style={{
-                    display: "flex",
-                    justifyContent: "space-between",
-                    alignItems: "center",
-                    marginBottom: 12,
-                  }}>
-                    <span style={{
-                      fontSize: "0.88rem",
-                      color: "var(--text-secondary)",
-                      display: "flex",
-                      alignItems: "center",
-                      gap: 8,
-                    }}>
-                      <span style={{ fontSize: "1.1rem" }}>{icon}</span>
-                      {label}
-                    </span>
-                    <span style={{
-                      fontFamily: "var(--font-mono)",
-                      fontSize: "0.95rem",
-                      fontWeight: 700,
-                      color: "var(--text-primary)",
-                    }}>
-                      ${form[key]}
-                    </span>
-                  </div>
-                  <input
-                    type="range"
-                    min={0} max={form.totalBudget} step={50}
-                    value={form[key]}
-                    onChange={(e) => setForm({ ...form, [key]: parseInt(e.target.value) })}
-                    style={{ width: "100%" }}
-                  />
-                </div>
-              ))}
             </div>
 
             {/* Actions */}
@@ -508,19 +605,43 @@ export function TripPlanner({ onTripCreated, onBack }: TripPlannerProps) {
               USDC on Base
             </p>
 
-            <button
-              onClick={handleFundTrip}
-              disabled={loading}
-              style={{
-                ...btnPrimaryStyle,
-                width: "100%",
-                padding: "16px",
-                fontSize: "1rem",
-                opacity: loading ? 0.5 : 1,
-              }}
-            >
-              {loading ? "Processing..." : "Pay with USDC →"}
-            </button>
+            <div style={{ display: "flex", flexDirection: "column", gap: 12, width: "100%" }}>
+              <button
+                onClick={handleFundTrip}
+                disabled={loading}
+                style={{
+                  ...btnPrimaryStyle,
+                  width: "100%",
+                  padding: "16px",
+                  fontSize: "1rem",
+                  opacity: loading ? 0.5 : 1,
+                }}
+              >
+                {loading ? "Processing..." : "Pay with USDC →"}
+              </button>
+              
+              <button
+                onClick={() => setStep("budget")}
+                disabled={loading}
+                style={{
+                  width: "100%",
+                  padding: "14px",
+                  fontSize: "0.9rem",
+                  background: "transparent",
+                  color: "var(--text-muted)",
+                  border: "1px solid var(--border)",
+                  borderRadius: "12px",
+                  cursor: loading ? "not-allowed" : "pointer",
+                  fontFamily: "'Inter', sans-serif",
+                  fontWeight: 600,
+                  transition: "all 0.2s ease"
+                }}
+                onMouseOver={(e) => e.currentTarget.style.color = "var(--text-primary)"}
+                onMouseOut={(e) => e.currentTarget.style.color = "var(--text-muted)"}
+              >
+                ← Back to Budget
+              </button>
+            </div>
 
             <p style={{
               fontFamily: "var(--font-mono)",

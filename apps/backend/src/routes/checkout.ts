@@ -54,7 +54,7 @@ checkoutRouter.post('/sessions', async (req, res) => {
       });
 
       if (locusRes.ok) {
-        const locusData = await locusRes.json();
+        const locusData = await locusRes.json() as any;
         const d = locusData.data || locusData;
         locusSessionId = d.id || d.sessionId;
         checkoutUrl = d.checkoutUrl || d.url || `https://beta.paywithlocus.com/checkout/${locusSessionId}`;
@@ -121,7 +121,7 @@ checkoutRouter.get('/sessions/:sessionId', async (req, res) => {
         headers: { 'Authorization': `Bearer ${LOCUS_API_KEY()}` },
       });
       if (locusRes.ok) {
-        const locusData = await locusRes.json();
+        const locusData = await locusRes.json() as any;
         const d = locusData.data || locusData;
         if (d.status === 'paid' || d.status === 'completed') {
           session.status = 'paid';
@@ -154,7 +154,7 @@ checkoutRouter.post('/sessions/:sessionId/confirm', async (req, res) => {
       });
 
       if (payRes.ok) {
-        const payData = await payRes.json();
+        const payData = await payRes.json() as any;
         const d = payData.data || payData;
         session.txHash = d.txHash || d.paymentTxHash || `0xLOCUS_${Date.now().toString(16)}`;
 

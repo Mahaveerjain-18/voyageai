@@ -28,14 +28,30 @@ agentRouter.post('/research/:tripId', async (req, res) => {
   });
 
   try {
-    // Step 1: Search for flights and hotels
-    const searchResults = await searchWeb(
-      `best hotels and flights ${trip.destination} ${trip.startDate}`,
-      trip.id
-    );
+    // Step 1: Targeted searches for each category
+    audit.log({
+      tripId: trip.id,
+      agentName: 'Research',
+      action: '🔍 Starting multi-category search',
+      reasoning: `Searching flights, hotels, activities & restaurants for ${trip.origin} → ${trip.destination}`,
+      severity: 'info',
+    });
 
-    // Step 2: Scrape top results for details
-    const scraped = await scrapeUrl(searchResults.results[0].url, trip.id);
+    const [flightSearch, hotelSearch, activitySearch, restaurantSearch] = await Promise.all([
+      searchWeb(`cheapest flights from ${trip.origin} to ${trip.destination} ${trip.startDate} makemytrip ixigo skyscanner price`, trip.id),
+      searchWeb(`best hotels in ${trip.destination} price per night ${trip.startDate}`, trip.id),
+      searchWeb(`top things to do in ${trip.destination} activities tours tickets price`, trip.id),
+      searchWeb(`best restaurants in ${trip.destination} popular food places`, trip.id),
+    ]);
+
+    // Step 2: Scrape top 2 results from each category for real price data
+    const scrapePromises = [
+      ...(flightSearch.results.slice(0, 2).map(r => scrapeUrl(r.url, trip.id))),
+      ...(hotelSearch.results.slice(0, 2).map(r => scrapeUrl(r.url, trip.id))),
+      ...(activitySearch.results.slice(0, 1).map(r => scrapeUrl(r.url, trip.id))),
+      ...(restaurantSearch.results.slice(0, 1).map(r => scrapeUrl(r.url, trip.id))),
+    ];
+    const scrapedResults = await Promise.all(scrapePromises);
 
     // Step 3: Check weather
     const weather = await getWeather(trip.destination, `${trip.startDate} to ${trip.endDate}`, trip.id);
@@ -43,14 +59,20 @@ agentRouter.post('/research/:tripId', async (req, res) => {
     // Step 4: Check transit times
     const transit = await getTransitTime('Airport', 'City Center', trip.id);
 
-    // Step 5: Synthesize with Gemini
+    // Step 5: Synthesize with Gemini — pass all search + scraped data for real prices
     const itinerary = await synthesizeItinerary(
       {
+        origin: trip.origin,
         destination: trip.destination,
         startDate: trip.startDate,
         endDate: trip.endDate,
-        searchResults: searchResults.results,
-        scrapedData: scraped,
+        searchResults: [
+          ...flightSearch.results.map(r => ({ ...r, category: 'flight' })),
+          ...hotelSearch.results.map(r => ({ ...r, category: 'hotel' })),
+          ...activitySearch.results.map(r => ({ ...r, category: 'activity' })),
+          ...restaurantSearch.results.map(r => ({ ...r, category: 'restaurant' })),
+        ],
+        scrapedData: scrapedResults,
         weather,
         transit,
         budget: trip.totalBudget,
@@ -61,49 +83,71 @@ agentRouter.post('/research/:tripId', async (req, res) => {
       trip.id
     );
 
-    // Generate options from the itinerary
+    // Build full research results with IDs, within-limit flags, and best pick markers
+    const bestPicks = itinerary.bestPicks || { flight: 0, hotel: 0, activity: 0, restaurant: 0 };
+
+    const buildOptions = (items: any[], category: 'flight' | 'hotel' | 'activity' | 'restaurant', limit: number, bestIdx: number) =>
+      (items || []).map((item: any, idx: number) => ({
+        id: uuidv4(),
+        category,
+        name: item.name || item.airline || 'Unknown',
+        description: item.description || '',
+        price: item.price || 0,
+        rating: item.rating || 4.0,
+        url: item.url || '',
+        provider: item.provider || '',
+        withinLimit: (item.price || 0) <= limit,
+        isBestPick: idx === bestIdx,
+        details: item,
+      }));
+
+    const researchFlights = buildOptions(itinerary.flights, 'flight', trip.spendingLimits.maxFlight, bestPicks.flight);
+    const researchHotels = buildOptions(itinerary.hotels, 'hotel', trip.spendingLimits.maxHotel, bestPicks.hotel);
+    const researchActivities = buildOptions(itinerary.activities, 'activity', trip.spendingLimits.maxActivities, bestPicks.activity);
+    const researchRestaurants = buildOptions(itinerary.restaurants, 'restaurant', trip.spendingLimits.maxFood, bestPicks.restaurant);
+
+    const researchResults = {
+      summary: itinerary.summary,
+      flights: researchFlights,
+      hotels: researchHotels,
+      activities: researchActivities,
+      restaurants: researchRestaurants,
+      bestPicks: {
+        flight: researchFlights.find((o: any) => o.isBestPick)?.id || '',
+        hotel: researchHotels.find((o: any) => o.isBestPick)?.id || '',
+        activity: researchActivities.find((o: any) => o.isBestPick)?.id || '',
+        restaurant: researchRestaurants.find((o: any) => o.isBestPick)?.id || '',
+      },
+      totalEstimatedCost: itinerary.totalEstimatedCost,
+      weather,
+    };
+
+    // Legacy options for booking flow (best picks only)
     const options = [
-      {
-        id: uuidv4(),
-        type: 'flight' as const,
-        name: itinerary.recommendedFlight.airline,
-        description: `${itinerary.recommendedFlight.route} — ${itinerary.recommendedFlight.class}`,
-        price: itinerary.recommendedFlight.price,
-        rating: 4.5,
-        provider: 'Skyscanner',
-        details: itinerary.recommendedFlight,
-      },
-      {
-        id: uuidv4(),
-        type: 'hotel' as const,
-        name: itinerary.recommendedHotel.name,
-        description: `${itinerary.recommendedHotel.location} — ${itinerary.recommendedHotel.totalNights} nights`,
-        price: itinerary.recommendedHotel.totalPrice,
-        rating: itinerary.recommendedHotel.rating,
-        provider: 'Booking.com',
-        details: itinerary.recommendedHotel,
-      },
-      ...itinerary.recommendedActivities.map((act) => ({
-        id: uuidv4(),
-        type: 'activity' as const,
-        name: act.name,
-        description: `Duration: ${act.duration}`,
-        price: act.price,
-        rating: 4.3,
-        provider: 'GetYourGuide',
-        details: act,
-      })),
+      ...(researchFlights.filter((o: any) => o.isBestPick).map((o: any) => ({
+        id: o.id, type: 'flight' as const, name: o.name, description: o.description,
+        price: o.price, rating: o.rating, provider: o.provider, details: o.details,
+      }))),
+      ...(researchHotels.filter((o: any) => o.isBestPick).map((o: any) => ({
+        id: o.id, type: 'hotel' as const, name: o.name, description: o.description,
+        price: o.price, rating: o.rating, provider: o.provider, details: o.details,
+      }))),
+      ...(researchActivities.map((o: any) => ({
+        id: o.id, type: 'activity' as const, name: o.name, description: o.description,
+        price: o.price, rating: o.rating, provider: o.provider, details: o.details,
+      }))),
     ];
 
     updateTrip(trip.id, {
       status: 'OPTIONS_READY',
       options,
+      researchResults,
     });
 
     audit.log({
       tripId: trip.id,
       agentName: 'Research',
-      action: `✅ Research complete — ${options.length} options found`,
+      action: `✅ Research complete — ${researchFlights.length + researchHotels.length + researchActivities.length + researchRestaurants.length} options found`,
       reasoning: `Total estimated cost: $${itinerary.totalEstimatedCost} (within $${trip.totalBudget} budget). Weather: ${weather.conditions}. Awaiting user approval.`,
       severity: 'success',
     });
@@ -111,6 +155,7 @@ agentRouter.post('/research/:tripId', async (req, res) => {
     res.json({
       status: 'OPTIONS_READY',
       summary: itinerary.summary,
+      researchResults,
       options,
       weather,
       estimatedTotal: itinerary.totalEstimatedCost,

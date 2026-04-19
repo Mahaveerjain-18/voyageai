@@ -1,8 +1,45 @@
 const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8080';
 
+export interface ResearchOption {
+  id: string;
+  category: 'flight' | 'hotel' | 'activity' | 'restaurant';
+  name: string;
+  description: string;
+  price: number;
+  rating: number;
+  url: string;
+  provider: string;
+  withinLimit: boolean;
+  isBestPick: boolean;
+  details: Record<string, any>;
+}
+
+export interface ResearchResults {
+  summary: string;
+  flights: ResearchOption[];
+  hotels: ResearchOption[];
+  activities: ResearchOption[];
+  restaurants: ResearchOption[];
+  bestPicks: {
+    flight: string;
+    hotel: string;
+    activity: string;
+    restaurant: string;
+  };
+  totalEstimatedCost: number;
+  weather?: Record<string, any>;
+  finalizedPlan?: {
+    flight: ResearchOption;
+    hotel: ResearchOption;
+    activities: ResearchOption[];
+    restaurants: ResearchOption[];
+  };
+}
+
 export interface Trip {
   id: string;
   userId: string;
+  origin: string;
   destination: string;
   startDate: string;
   endDate: string;
@@ -20,6 +57,7 @@ export interface Trip {
   };
   subwalletAddress?: string;
   checkoutSessionId?: string;
+  researchResults?: ResearchResults;
   options: TripOption[];
   selectedOptions: string[];
   bookings: Booking[];
@@ -73,6 +111,7 @@ export interface WalletBalance {
 // ─── API Functions ───────────────────────────────────────────
 
 export async function createTrip(data: {
+  origin: string;
   destination: string;
   startDate: string;
   endDate: string;
@@ -161,5 +200,19 @@ export async function cancelTrip(tripId: string) {
   const res = await fetch(`${API_BASE}/api/trips/${tripId}/cancel`, {
     method: 'POST',
   });
+  return res.json();
+}
+
+export async function swapOption(tripId: string, category: string, newItem: any): Promise<Trip> {
+  const res = await fetch(`${API_BASE}/api/trips/${tripId}/swap`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ category, newItem }),
+  });
+  if (!res.ok) {
+    const errBody = await res.json().catch(() => ({}));
+    console.error("Swap failed:", res.status, errBody);
+    throw new Error(errBody.error || "Failed to swap option");
+  }
   return res.json();
 }

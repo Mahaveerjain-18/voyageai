@@ -47,9 +47,41 @@ export interface Booking {
   bookedAt: string;
 }
 
+export interface ResearchOption {
+  id: string;
+  category: 'flight' | 'hotel' | 'activity' | 'restaurant';
+  name: string;
+  description: string;
+  price: number;
+  rating: number;
+  url: string;
+  provider: string;
+  withinLimit: boolean;
+  isBestPick: boolean;
+  details: Record<string, any>;
+}
+
+export interface ResearchResults {
+  summary: string;
+  flights: ResearchOption[];
+  hotels: ResearchOption[];
+  activities: ResearchOption[];
+  restaurants: ResearchOption[];
+  bestPicks: {
+    flight: string;   // id of best flight
+    hotel: string;    // id of best hotel
+    activity: string; // id of best activity
+    restaurant: string; // id of best restaurant
+  };
+  totalEstimatedCost: number;
+  weather?: Record<string, any>;
+  [key: string]: any;
+}
+
 export interface Trip {
   id: string;
   userId: string;
+  origin: string;
   destination: string;
   startDate: string;
   endDate: string;
@@ -61,6 +93,7 @@ export interface Trip {
   totalSpent: number;
   subwalletAddress?: string;
   checkoutSessionId?: string;
+  researchResults?: ResearchResults;
   options: TripOption[];
   selectedOptions: string[];
   bookings: Booking[];
@@ -74,6 +107,7 @@ const trips: Map<string, Trip> = new Map();
 
 export function createTrip(data: {
   userId: string;
+  origin: string;
   destination: string;
   startDate: string;
   endDate: string;
@@ -85,6 +119,7 @@ export function createTrip(data: {
   const trip: Trip = {
     id: uuidv4(),
     userId: data.userId,
+    origin: data.origin || '',
     destination: data.destination,
     startDate: data.startDate,
     endDate: data.endDate,

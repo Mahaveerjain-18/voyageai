@@ -20,7 +20,7 @@ async function locusRequest(path: string, options: RequestInit = {}): Promise<an
     },
   });
 
-  const data = await res.json();
+  const data = await res.json() as any;
 
   if (!res.ok) {
     console.error(`[Locus API Error] ${path}:`, data);

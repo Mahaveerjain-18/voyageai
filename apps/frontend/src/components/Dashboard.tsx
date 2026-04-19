@@ -8,8 +8,10 @@ import {
   approveOptions,
   executeBookings,
   deliverConfirmations,
+  swapOption,
   Trip,
   AuditEntry,
+  ResearchOption,
 } from "@/lib/api";
 import { AuditLogPanel } from "./AuditLogPanel";
 
@@ -36,6 +38,7 @@ export function Dashboard({ tripId, onBack }: DashboardProps) {
   const [auditLogs, setAuditLogs] = useState<AuditEntry[]>([]);
   const [loading, setLoading] = useState(false);
   const [email, setEmail] = useState("traveler@voyageai.com");
+  const [researchTab, setResearchTab] = useState<'flights' | 'hotels' | 'activities' | 'restaurants' | 'bestpicks'>('bestpicks');
 
   const refreshData = useCallback(async () => {
     try {
@@ -85,6 +88,176 @@ export function Dashboard({ tripId, onBack }: DashboardProps) {
     { label: "Food", icon: "🍱", max: trip.spendingLimits.maxFood, spent: 0 },
   ];
 
+  const categoryIcon = (cat: string) => {
+    switch (cat) {
+      case 'flight': return '✈️';
+      case 'hotel': return '🏨';
+      case 'activity': return '🎯';
+      case 'restaurant': return '🍱';
+      default: return '📌';
+    }
+  };
+
+  const renderStars = (rating: number) => {
+    const full = Math.floor(rating);
+    const half = rating % 1 >= 0.3;
+    return (
+      <span style={{ fontSize: "0.72rem", letterSpacing: 1 }}>
+        {'★'.repeat(full)}{half ? '½' : ''}{'☆'.repeat(5 - full - (half ? 1 : 0))}
+        <span style={{ fontFamily: "var(--font-mono)", fontSize: "0.7rem", color: "var(--text-secondary)", marginLeft: 4 }}>
+          {rating.toFixed(1)}
+        </span>
+      </span>
+    );
+  };
+
+  const handleSwap = async (item: ResearchOption) => {
+    try {
+      await withAction(() => swapOption(tripId, item.category, item));
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  const renderResearchCard = (item: ResearchOption, highlight = false) => (
+    <div key={item.id} style={{
+      padding: "16px 18px",
+      background: highlight ? "rgba(200,245,71,0.04)" : "#111",
+      border: `1px solid ${item.isBestPick ? "rgba(200,245,71,0.25)" : "rgba(255,255,255,0.05)"}`,
+      borderRadius: 14,
+      transition: "border-color 0.2s, background 0.2s",
+    }}>
+      {/* Top row: icon, name, badges, price */}
+      <div style={{ display: "flex", alignItems: "flex-start", gap: 12 }}>
+        <span style={{ fontSize: "1.4rem", marginTop: 2 }}>{categoryIcon(item.category)}</span>
+        <div style={{ flex: 1, minWidth: 0 }}>
+          <div style={{ display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap", marginBottom: 4 }}>
+            <p style={{ fontWeight: 600, fontSize: "0.92rem", color: "var(--text-primary)" }}>{item.name}</p>
+            {item.isBestPick && (
+              <span style={{
+                padding: "2px 8px",
+                background: "rgba(200,245,71,0.15)",
+                border: "1px solid rgba(200,245,71,0.3)",
+                borderRadius: 6,
+                fontSize: "0.65rem",
+                fontFamily: "var(--font-mono)",
+                fontWeight: 700,
+                color: "#c8f547",
+                letterSpacing: "0.03em",
+                textTransform: "uppercase",
+              }}>
+                ⭐ Best Pick
+              </span>
+            )}
+            <span style={{
+              padding: "2px 7px",
+              background: item.withinLimit ? "rgba(34,197,94,0.1)" : "rgba(239,68,68,0.1)",
+              border: `1px solid ${item.withinLimit ? "rgba(34,197,94,0.25)" : "rgba(239,68,68,0.25)"}`,
+              borderRadius: 5,
+              fontSize: "0.62rem",
+              fontFamily: "var(--font-mono)",
+              fontWeight: 600,
+              color: item.withinLimit ? "#22c55e" : "#ef4444",
+            }}>
+              {item.withinLimit ? "✓ Within limit" : "✗ Over limit"}
+            </span>
+          </div>
+          <p style={{ fontSize: "0.78rem", color: "var(--text-muted)", marginBottom: 6, lineHeight: 1.4 }}>
+            {item.description}
+          </p>
+          <div style={{ display: "flex", alignItems: "center", gap: 12, flexWrap: "wrap" }}>
+            <span style={{ color: "#f59e0b" }}>{renderStars(item.rating)}</span>
+            <span style={{ fontSize: "0.7rem", color: "var(--text-faint)", fontFamily: "var(--font-mono)" }}>
+              via {item.provider}
+            </span>
+            {item.details?.departureTime && (
+              <span style={{ fontSize: "0.7rem", color: "var(--text-faint)", fontFamily: "var(--font-mono)" }}>
+                🛫 {item.details.departureTime}
+              </span>
+            )}
+            {item.details?.duration && (
+              <span style={{ fontSize: "0.7rem", color: "var(--text-faint)", fontFamily: "var(--font-mono)" }}>
+                ⏱ {item.details.duration}
+              </span>
+            )}
+          </div>
+        </div>
+        <div style={{ textAlign: "right", flexShrink: 0 }}>
+          <p style={{
+            fontFamily: "var(--font-mono)",
+            fontWeight: 700,
+            color: "#c8f547",
+            fontSize: "1.1rem",
+            marginBottom: 4,
+          }}>
+            ${item.price}
+          </p>
+          {item.details?.pricePerNight && (
+            <p style={{ fontFamily: "var(--font-mono)", fontSize: "0.65rem", color: "var(--text-faint)" }}>
+              ${item.details.pricePerNight}/night
+            </p>
+          )}
+        </div>
+      </div>
+      {/* Action Links */}
+      <div style={{ display: "flex", alignItems: "center", gap: 10, marginTop: 10 }}>
+        {item.url && (
+          <a
+            href={item.url}
+            target="_blank"
+            rel="noopener noreferrer"
+            style={{
+              display: "inline-flex",
+              alignItems: "center",
+              gap: 5,
+              padding: "5px 12px",
+              background: "rgba(255,255,255,0.03)",
+              border: "1px solid rgba(255,255,255,0.08)",
+              borderRadius: 6,
+              fontSize: "0.72rem",
+              color: "var(--text-secondary)",
+              textDecoration: "none",
+              fontFamily: "var(--font-mono)",
+              transition: "all 0.2s",
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.borderColor = "rgba(200,245,71,0.3)";
+              e.currentTarget.style.color = "#c8f547";
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.borderColor = "rgba(255,255,255,0.08)";
+              e.currentTarget.style.color = "var(--text-secondary)";
+            }}
+          >
+            🔗 View on {item.provider} →
+          </a>
+        )}
+        {!item.isBestPick && (
+          <button
+            onClick={() => handleSwap(item)}
+            disabled={loading}
+            style={{
+              padding: "5px 12px",
+              background: "transparent",
+              border: "1px solid rgba(200,245,71,0.3)",
+              borderRadius: 6,
+              fontSize: "0.72rem",
+              color: "#c8f547",
+              fontFamily: "var(--font-mono)",
+              cursor: loading ? "not-allowed" : "pointer",
+              transition: "all 0.2s",
+              opacity: loading ? 0.5 : 1,
+            }}
+            onMouseEnter={(e) => { e.currentTarget.style.background = "rgba(200,245,71,0.1)"; }}
+            onMouseLeave={(e) => { e.currentTarget.style.background = "transparent"; }}
+          >
+            Swap with AI Choice
+          </button>
+        )}
+      </div>
+    </div>
+  );
+
   return (
     <div style={{ maxWidth: 1280, margin: "0 auto", padding: "32px 24px 64px" }}>
       {/* ── Header ── */}
@@ -122,7 +295,7 @@ export function Dashboard({ tripId, onBack }: DashboardProps) {
               color: "var(--text-primary)",
               marginBottom: 2,
             }}>
-              {trip.destination}
+              {trip.origin ? `${trip.origin} → ${trip.destination}` : trip.destination}
             </h1>
             <p style={{
               fontFamily: "var(--font-mono)",
@@ -165,8 +338,8 @@ export function Dashboard({ tripId, onBack }: DashboardProps) {
         </div>
       </div>
 
-      {/* ── Main grid ── */}
-      <div style={{ display: "grid", gridTemplateColumns: "1fr 380px", gap: 20, alignItems: "start" }}>
+      {/* ── Main content ── */}
+      <div style={{ display: "grid", gridTemplateColumns: "minmax(0, 900px)", justifyContent: "center", gap: 20, alignItems: "start" }}>
         {/* Left column */}
         <div style={{ display: "flex", flexDirection: "column", gap: 20 }}>
 
@@ -292,6 +465,278 @@ export function Dashboard({ tripId, onBack }: DashboardProps) {
             </div>
           </div>
 
+          {/* ─── Research Results (Rich UI) ─── */}
+          {trip.researchResults && (
+            <div style={cardStyle}>
+              {/* Summary */}
+              <div style={{ marginBottom: 20 }}>
+                <h3 style={{
+                  fontFamily: "var(--font-serif)",
+                  fontSize: "1.15rem",
+                  fontWeight: 600,
+                  color: "var(--text-primary)",
+                  marginBottom: 8,
+                }}>
+                  AI Research Results
+                </h3>
+                <p style={{
+                  fontSize: "0.85rem",
+                  color: "var(--text-secondary)",
+                  lineHeight: 1.6,
+                }}>
+                  {trip.researchResults.summary}
+                </p>
+                {trip.researchResults.weather && (
+                  <p style={{
+                    fontSize: "0.78rem",
+                    color: "var(--text-muted)",
+                    marginTop: 6,
+                    fontFamily: "var(--font-mono)",
+                  }}>
+                    🌤️ Weather: {(trip.researchResults.weather as any).conditions || 'Fair'} · {(trip.researchResults.weather as any).avgTemp || 24}°C
+                  </p>
+                )}
+                <p style={{
+                  fontFamily: "var(--font-mono)",
+                  fontSize: "0.82rem",
+                  color: "#c8f547",
+                  marginTop: 8,
+                  fontWeight: 600,
+                }}>
+                  Estimated Total: ${trip.researchResults.totalEstimatedCost}
+                </p>
+              </div>
+
+              {/* Tabs */}
+              <div style={{ display: "flex", gap: 4, marginBottom: 18, flexWrap: "wrap" }}>
+                {([
+                  { key: 'bestpicks' as const, label: '⭐ Best Picks', count: 4 },
+                  { key: 'flights' as const, label: '✈️ Flights', count: trip.researchResults.flights.length },
+                  { key: 'hotels' as const, label: '🏨 Hotels', count: trip.researchResults.hotels.length },
+                  { key: 'activities' as const, label: '🎯 Activities', count: trip.researchResults.activities.length },
+                  { key: 'restaurants' as const, label: '🍱 Restaurants', count: trip.researchResults.restaurants.length },
+                ]).map(({ key, label, count }) => (
+                  <button
+                    key={key}
+                    onClick={() => setResearchTab(key)}
+                    style={{
+                      padding: "8px 14px",
+                      background: researchTab === key ? "rgba(200,245,71,0.12)" : "rgba(255,255,255,0.03)",
+                      border: `1px solid ${researchTab === key ? "rgba(200,245,71,0.3)" : "rgba(255,255,255,0.06)"}`,
+                      borderRadius: 8,
+                      color: researchTab === key ? "#c8f547" : "var(--text-secondary)",
+                      fontSize: "0.78rem",
+                      fontFamily: "var(--font-sans)",
+                      fontWeight: researchTab === key ? 600 : 400,
+                      cursor: "pointer",
+                      transition: "all 0.2s",
+                    }}
+                  >
+                    {label} ({count})
+                  </button>
+                ))}
+              </div>
+
+              {/* Best Picks Tab */}
+              {researchTab === 'bestpicks' && (
+                <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+                  <p style={{ fontSize: "0.78rem", color: "var(--text-muted)", marginBottom: 4, fontStyle: "italic" }}>
+                    AI-recommended best options based on rating, popularity, and price within your limits.
+                  </p>
+                  {[
+                    ...trip.researchResults.flights.filter(o => o.isBestPick),
+                    ...trip.researchResults.hotels.filter(o => o.isBestPick),
+                    ...trip.researchResults.activities.filter(o => o.isBestPick),
+                    ...trip.researchResults.restaurants.filter(o => o.isBestPick),
+                  ].map((item) => renderResearchCard(item, true))}
+                </div>
+              )}
+
+              {/* Category Tabs */}
+              {researchTab === 'flights' && (
+                <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+                  {trip.researchResults.flights.map((item) => renderResearchCard(item))}
+                </div>
+              )}
+              {researchTab === 'hotels' && (
+                <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+                  {trip.researchResults.hotels.map((item) => renderResearchCard(item))}
+                </div>
+              )}
+              {researchTab === 'activities' && (
+                <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+                  {trip.researchResults.activities.map((item) => renderResearchCard(item))}
+                </div>
+              )}
+              {researchTab === 'restaurants' && (
+                <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+                  {trip.researchResults.restaurants.map((item) => renderResearchCard(item))}
+                </div>
+              )}
+            </div>
+          )}
+
+          {/* ─── AI Finalized Plan ─── */}
+          {trip.researchResults?.finalizedPlan && (
+            <div style={cardStyle}>
+              <h3 style={{
+                fontFamily: "var(--font-serif)",
+                fontSize: "1.15rem",
+                fontWeight: 600,
+                color: "var(--text-primary)",
+                marginBottom: 4,
+              }}>
+                AI Finalized Plan
+              </h3>
+              <p style={{
+                fontSize: "0.78rem",
+                color: "var(--text-muted)",
+                marginBottom: 18,
+                fontStyle: "italic",
+              }}>
+                The AI agent has selected these options for booking based on your preferences and budget.
+              </p>
+
+              {/* Selected Flight */}
+              {trip.researchResults.finalizedPlan.flight && (
+                <div style={{ marginBottom: 18 }}>
+                  <p style={{ fontSize: "0.72rem", color: "var(--accent)", fontFamily: "var(--font-mono)", fontWeight: 600, marginBottom: 8, textTransform: "uppercase", letterSpacing: "0.05em" }}>
+                    Flight
+                  </p>
+                  <div style={{
+                    padding: "14px 16px",
+                    background: "rgba(200,245,71,0.04)",
+                    border: "1px solid rgba(200,245,71,0.15)",
+                    borderRadius: 12,
+                    display: "flex",
+                    justifyContent: "space-between",
+                    alignItems: "center",
+                  }}>
+                    <div>
+                      <p style={{ fontWeight: 600, fontSize: "0.9rem", color: "var(--text-primary)" }}>
+                        {trip.researchResults.finalizedPlan.flight.name}
+                      </p>
+                      <p style={{ fontSize: "0.75rem", color: "var(--text-muted)" }}>
+                        {trip.researchResults.finalizedPlan.flight.description}
+                      </p>
+                    </div>
+                    <p style={{ fontFamily: "var(--font-mono)", fontWeight: 700, color: "#c8f547", fontSize: "1rem" }}>
+                      ${trip.researchResults.finalizedPlan.flight.price}
+                    </p>
+                  </div>
+                </div>
+              )}
+
+              {/* Selected Hotel */}
+              {trip.researchResults.finalizedPlan.hotel && (
+                <div style={{ marginBottom: 18 }}>
+                  <p style={{ fontSize: "0.72rem", color: "var(--accent)", fontFamily: "var(--font-mono)", fontWeight: 600, marginBottom: 8, textTransform: "uppercase", letterSpacing: "0.05em" }}>
+                    Hotel ({(trip.researchResults.finalizedPlan.hotel as any).totalNights} nights)
+                  </p>
+                  <div style={{
+                    padding: "14px 16px",
+                    background: "rgba(200,245,71,0.04)",
+                    border: "1px solid rgba(200,245,71,0.15)",
+                    borderRadius: 12,
+                    display: "flex",
+                    justifyContent: "space-between",
+                    alignItems: "center",
+                  }}>
+                    <div>
+                      <p style={{ fontWeight: 600, fontSize: "0.9rem", color: "var(--text-primary)" }}>
+                        {trip.researchResults.finalizedPlan.hotel.name}
+                      </p>
+                      <p style={{ fontSize: "0.75rem", color: "var(--text-muted)" }}>
+                        {trip.researchResults.finalizedPlan.hotel.description} · ${(trip.researchResults.finalizedPlan.hotel as any).pricePerNight}/night
+                      </p>
+                    </div>
+                    <p style={{ fontFamily: "var(--font-mono)", fontWeight: 700, color: "#c8f547", fontSize: "1rem" }}>
+                      ${trip.researchResults.finalizedPlan.hotel.price}
+                    </p>
+                  </div>
+                </div>
+              )}
+
+              {/* Selected Activities */}
+              {trip.researchResults.finalizedPlan.activities?.length > 0 && (
+                <div style={{ marginBottom: 18 }}>
+                  <p style={{ fontSize: "0.72rem", color: "var(--accent)", fontFamily: "var(--font-mono)", fontWeight: 600, marginBottom: 8, textTransform: "uppercase", letterSpacing: "0.05em" }}>
+                    Activities ({trip.researchResults.finalizedPlan.activities.length})
+                  </p>
+                  <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
+                    {trip.researchResults.finalizedPlan.activities.map((act: any, i: number) => (
+                      <div key={i} style={{
+                        padding: "12px 16px",
+                        background: "#111",
+                        border: "1px solid rgba(255,255,255,0.06)",
+                        borderRadius: 10,
+                        display: "flex",
+                        justifyContent: "space-between",
+                        alignItems: "center",
+                      }}>
+                        <div style={{ flex: 1, minWidth: 0 }}>
+                          <p style={{ fontWeight: 500, fontSize: "0.85rem", color: "var(--text-primary)" }}>{act.name}</p>
+                          <p style={{ fontSize: "0.7rem", color: "var(--text-muted)" }}>{act.description} · {act.duration}</p>
+                        </div>
+                        <p style={{ fontFamily: "var(--font-mono)", fontWeight: 600, color: "var(--text-primary)", fontSize: "0.85rem", marginLeft: 12 }}>
+                          ${act.price}
+                        </p>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* Selected Restaurants */}
+              {trip.researchResults.finalizedPlan.restaurants?.length > 0 && (
+                <div style={{ marginBottom: 18 }}>
+                  <p style={{ fontSize: "0.72rem", color: "var(--accent)", fontFamily: "var(--font-mono)", fontWeight: 600, marginBottom: 8, textTransform: "uppercase", letterSpacing: "0.05em" }}>
+                    Dining ({trip.researchResults.finalizedPlan.restaurants.length} meals)
+                  </p>
+                  <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
+                    {trip.researchResults.finalizedPlan.restaurants.map((rest: any, i: number) => (
+                      <div key={i} style={{
+                        padding: "12px 16px",
+                        background: "#111",
+                        border: "1px solid rgba(255,255,255,0.06)",
+                        borderRadius: 10,
+                        display: "flex",
+                        justifyContent: "space-between",
+                        alignItems: "center",
+                      }}>
+                        <div style={{ flex: 1, minWidth: 0 }}>
+                          <p style={{ fontWeight: 500, fontSize: "0.85rem", color: "var(--text-primary)" }}>{rest.name}</p>
+                          <p style={{ fontSize: "0.7rem", color: "var(--text-muted)" }}>{rest.description}</p>
+                        </div>
+                        <p style={{ fontFamily: "var(--font-mono)", fontWeight: 600, color: "var(--text-primary)", fontSize: "0.85rem", marginLeft: 12 }}>
+                          ${rest.price}
+                        </p>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* Finalized total */}
+              <div style={{
+                padding: "14px 16px",
+                background: "rgba(200,245,71,0.06)",
+                border: "1px solid rgba(200,245,71,0.2)",
+                borderRadius: 12,
+                display: "flex",
+                justifyContent: "space-between",
+                alignItems: "center",
+              }}>
+                <p style={{ fontFamily: "var(--font-mono)", fontSize: "0.82rem", color: "var(--text-secondary)", fontWeight: 600 }}>
+                  Finalized Total
+                </p>
+                <p style={{ fontFamily: "var(--font-mono)", fontWeight: 700, color: "#c8f547", fontSize: "1.1rem" }}>
+                  ${trip.researchResults.totalEstimatedCost}
+                </p>
+              </div>
+            </div>
+          )}
+
           {/* Agent Controls Card */}
           <div style={cardStyle}>
             <h3 style={{
@@ -315,7 +760,7 @@ export function Dashboard({ tripId, onBack }: DashboardProps) {
                   opacity: loading ? 0.5 : 1,
                 }}
               >
-                {loading ? "Researching..." : "🔍  Start AI Research"}
+                {loading ? "Researching..." : "Start AI Research"}
               </button>
             )}
 
@@ -330,7 +775,7 @@ export function Dashboard({ tripId, onBack }: DashboardProps) {
                   opacity: loading ? 0.5 : 1,
                 }}
               >
-                {loading ? "Approving..." : "✅  Approve All Options"}
+                {loading ? "Approving..." : "Approve All Options"}
               </button>
             )}
 
@@ -345,7 +790,7 @@ export function Dashboard({ tripId, onBack }: DashboardProps) {
                   opacity: loading ? 0.5 : 1,
                 }}
               >
-                {loading ? "Booking..." : "💳  Execute Bookings"}
+                {loading ? "Booking..." : "Execute Bookings"}
               </button>
             )}
 
@@ -381,7 +826,7 @@ export function Dashboard({ tripId, onBack }: DashboardProps) {
                     opacity: loading ? 0.5 : 1,
                   }}
                 >
-                  {loading ? "Sending..." : "📧  Deliver"}
+                  {loading ? "Sending..." : "Deliver"}
                 </button>
               </div>
             )}
@@ -395,7 +840,7 @@ export function Dashboard({ tripId, onBack }: DashboardProps) {
                   color: "#c8f547",
                   marginBottom: 6,
                 }}>
-                  🎉 Trip Booked & Delivered!
+                  Trip Booked & Delivered!
                 </p>
                 <p style={{
                   fontFamily: "var(--font-mono)",
@@ -420,8 +865,9 @@ export function Dashboard({ tripId, onBack }: DashboardProps) {
             )}
           </div>
 
-          {/* Options / Bookings list */}
-          {(trip.options.length > 0 || trip.bookings.length > 0) && (
+
+          {/* Legacy Bookings list */}
+          {trip.bookings.length > 0 && (
             <div style={cardStyle}>
               <h3 style={{
                 fontFamily: "var(--font-serif)",
@@ -430,70 +876,37 @@ export function Dashboard({ tripId, onBack }: DashboardProps) {
                 color: "var(--text-primary)",
                 marginBottom: 18,
               }}>
-                {trip.bookings.length > 0 ? "Bookings" : "Research Results"}
+                Confirmed Bookings
               </h3>
-
               <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-                {(trip.bookings.length > 0 ? trip.bookings : trip.options).map((item: any) => (
+                {trip.bookings.map((item: any) => (
                   <div key={item.id} style={{
                     display: "flex",
                     alignItems: "center",
                     gap: 14,
                     padding: "14px 16px",
                     background: "#111",
-                    border: "1px solid rgba(255,255,255,0.05)",
+                    border: "1px solid rgba(200,245,71,0.15)",
                     borderRadius: 12,
-                    transition: "border-color 0.2s",
                   }}>
                     <span style={{ fontSize: "1.3rem" }}>
                       {item.type === "flight" ? "✈️" : item.type === "hotel" ? "🏨" : "🎯"}
                     </span>
                     <div style={{ flex: 1, minWidth: 0 }}>
-                      <p style={{
-                        fontWeight: 600,
-                        fontSize: "0.9rem",
-                        overflow: "hidden",
-                        textOverflow: "ellipsis",
-                        whiteSpace: "nowrap",
-                      }}>{item.name}</p>
-                      <p style={{
-                        fontSize: "0.75rem",
-                        color: "var(--text-muted)",
-                        overflow: "hidden",
-                        textOverflow: "ellipsis",
-                        whiteSpace: "nowrap",
-                      }}>
-                        {item.description || item.provider}
+                      <p style={{ fontWeight: 600, fontSize: "0.9rem" }}>{item.name}</p>
+                      <p style={{ fontSize: "0.72rem", color: "var(--text-muted)", fontFamily: "var(--font-mono)" }}>
+                        {item.confirmationCode}
                       </p>
                     </div>
-                    <div style={{ textAlign: "right", flexShrink: 0 }}>
-                      <p style={{
-                        fontFamily: "var(--font-mono)",
-                        fontWeight: 700,
-                        color: "#c8f547",
-                        fontSize: "1rem",
-                      }}>
-                        ${item.price}
-                      </p>
-                      {item.confirmationCode && (
-                        <p style={{
-                          fontFamily: "var(--font-mono)",
-                          fontSize: "0.68rem",
-                          color: "var(--text-secondary)",
-                        }}>
-                          {item.confirmationCode}
-                        </p>
-                      )}
-                    </div>
+                    <p style={{ fontFamily: "var(--font-mono)", fontWeight: 700, color: "#c8f547", fontSize: "1rem" }}>
+                      ${item.price}
+                    </p>
                   </div>
                 ))}
               </div>
             </div>
           )}
         </div>
-
-        {/* Right column: Audit Log */}
-        <AuditLogPanel logs={auditLogs} />
       </div>
     </div>
   );

@@ -35,23 +35,26 @@ interface Step {
 }
 
 const STEPS: Step[] = [
+  // ── 0. Initial Agent prompt ─────────────────────────
+  { type: "agent",  delay: 0,     content: "Where would you like to travel today? 🌎" },
+
   // ── 1. User query (typewriter) ──────────────────────
-  { type: "user",   delay: 600,   content: "5 days in Bali, August, budget $2,000" },
+  { type: "user",   delay: 500,   content: "5 days in Bali, August, budget $2,000" },
 
   // ── 2. Thinking ─────────────────────────────────────
-  { type: "typing", delay: 2200 },
-  { type: "status", delay: 2800,  content: "Searching flights on 6 providers..." },
-  { type: "status", delay: 3600,  content: "Scraping hotel rates from Booking.com..." },
-  { type: "status", delay: 4400,  content: "Checking weather forecast — 30°C, sunny" },
-  { type: "status", delay: 5200,  content: "Ranking 12 options by value score..." },
+  { type: "typing", delay: 1300 },
+  { type: "status", delay: 1600,  content: "Searching flights on 6 providers..." },
+  { type: "status", delay: 2000,  content: "Scraping hotel rates from Booking.com..." },
+  { type: "status", delay: 2400,  content: "Checking weather forecast — 30°C, sunny" },
+  { type: "status", delay: 2800,  content: "Ranking 12 options by value score..." },
 
   // ── 3. Agent reply ──────────────────────────────────
-  { type: "agent",  delay: 6200,  content: "Found 3 best packages within your $2,000 budget. Here are the top matches:" },
+  { type: "agent",  delay: 3300,  content: "Found 3 best packages within your $2,000 budget. Here are the top matches:" },
 
   // ── 4. Options cards ────────────────────────────────
   {
     type: "options",
-    delay: 7200,
+    delay: 3800,
     data: [
       { name: "Qatar Airways + Ubud Villa",      tags: "FLIGHT · HOTEL · 5N", score: 96, price: "$1,840", oh: "8% OH" },
       { name: "Singapore Air + Seminyak Resort",  tags: "FLIGHT · HOTEL · 5N", score: 91, price: "$1,720", oh: "12% OH" },
@@ -60,19 +63,19 @@ const STEPS: Step[] = [
   },
 
   // ── 5. Agent reasoning ──────────────────────────────
-  { type: "agent", delay: 9200, content: "Qatar Airways + Ubud Villa has the highest value score — direct flight, free cancellation, and includes breakfast. How much would you like to allocate?" },
+  { type: "agent", delay: 4800, content: "Qatar Airways + Ubud Villa has the highest value score — direct flight, free cancellation, and includes breakfast. How much would you like to allocate?" },
 
   // ── 6. Budget selection ─────────────────────────────
   {
     type: "budget",
-    delay: 10500,
+    delay: 5500,
     data: { amounts: ["$1,560", "$1,720", "$1,840", "$2,000"], selected: 2 },
   },
 
   // ── 7. Confirm dialog ───────────────────────────────
   {
     type: "confirm",
-    delay: 12200,
+    delay: 6300,
     data: {
       name: "Qatar Airways + Ubud Villa",
       price: "$1,840.00",
@@ -81,12 +84,12 @@ const STEPS: Step[] = [
   },
 
   // ── 8. Typing again ─────────────────────────────────
-  { type: "typing", delay: 13800 },
+  { type: "typing", delay: 7100 },
 
   // ── 9. Transaction ──────────────────────────────────
   {
     type: "tx",
-    delay: 14800,
+    delay: 7600,
     data: {
       hash: "0x7f3a...e91d",
       chain: "Base (L2)",
@@ -97,7 +100,7 @@ const STEPS: Step[] = [
   // ── 10. Success ─────────────────────────────────────
   {
     type: "success",
-    delay: 16200,
+    delay: 8300,
     content: "Booking confirmed! Confirmation sent to your dashboard.",
   },
 ];
@@ -106,7 +109,7 @@ const STEPS: Step[] = [
 const LOOP_RESTART_DELAY = 4000;
 const TOTAL_DURATION = STEPS[STEPS.length - 1].delay + LOOP_RESTART_DELAY;
 
-export function AgentDemo() {
+export function AgentDemo({ onStartPlanning }: { onStartPlanning?: () => void }) {
   const [activeSteps, setActiveSteps] = useState<number[]>([]);
   const [typewriterText, setTypewriterText] = useState("");
   const [isTyping, setIsTyping] = useState(false);
@@ -142,15 +145,15 @@ export function AgentDemo() {
 
   // ── Typewriter for user message ───────────────────────
   useEffect(() => {
-    if (activeSteps.includes(0) && !isTyping) {
+    if (activeSteps.includes(1) && !isTyping) {
       setIsTyping(true);
-      const full = STEPS[0].content!;
+      const full = STEPS[1].content!;
       let i = 0;
       const iv = setInterval(() => {
         i++;
         setTypewriterText(full.slice(0, i));
         if (i >= full.length) clearInterval(iv);
-      }, 35);
+      }, 15);
       return () => clearInterval(iv);
     }
   }, [activeSteps, isTyping]);
@@ -190,19 +193,26 @@ export function AgentDemo() {
 
       {/* ── Scrollable body ────────────────────────────── */}
       <div className="demo-body" ref={scrollRef}>
-        {/* 0 — User message (typewriter) */}
+        {/* 0 — Agent greeting */}
         {vis(0) && (
-          <div className="demo-bubble demo-bubble-user demo-enter">
-            {typewriterText}
-            <span className="demo-cursor" />
+          <div className="demo-bubble demo-bubble-agent demo-enter">
+            {STEPS[0].content}
           </div>
         )}
 
-        {/* 1 — Typing dots */}
-        {showTyping(1) && <TypingDots />}
+        {/* 1 — User message (typewriter) */}
+        {vis(1) && (
+          <div className="demo-bubble demo-bubble-user demo-enter">
+            {typewriterText}
+            {isTyping && <span className="demo-cursor" />}
+          </div>
+        )}
 
-        {/* 2–5 — Status lines */}
-        {[2, 3, 4, 5].map(
+        {/* 2 — Typing dots */}
+        {showTyping(2) && <TypingDots />}
+
+        {/* 3–6 — Status lines */}
+        {[3, 4, 5, 6].map(
           (idx) =>
             vis(idx) && (
               <div key={idx} className="demo-status demo-enter">
@@ -212,20 +222,20 @@ export function AgentDemo() {
             )
         )}
 
-        {/* 6 — Agent reply */}
-        {vis(6) && (
+        {/* 7 — Agent reply */}
+        {vis(7) && (
           <div className="demo-bubble demo-bubble-agent demo-enter">
-            {STEPS[6].content}
+            {STEPS[7].content}
           </div>
         )}
 
-        {/* 7 — Options cards */}
-        {vis(7) && (
+        {/* 8 — Options cards */}
+        {vis(8) && (
           <div className="demo-options-card demo-enter">
             <div className="demo-options-header">
               3 MATCHES · VERIFIED
             </div>
-            {(STEPS[7].data as any[]).map((opt: any, i: number) => (
+            {(STEPS[8].data as any[]).map((opt: any, i: number) => (
               <div
                 key={i}
                 className={`demo-option-row ${i === 0 ? "demo-option-best" : ""}`}
@@ -246,23 +256,23 @@ export function AgentDemo() {
           </div>
         )}
 
-        {/* 8 — Agent reasoning */}
-        {vis(8) && (
+        {/* 9 — Agent reasoning */}
+        {vis(9) && (
           <div className="demo-bubble demo-bubble-agent demo-enter">
-            {STEPS[8].content}
+            {STEPS[9].content}
           </div>
         )}
 
-        {/* 9 — Budget selection */}
-        {vis(9) && (
+        {/* 10 — Budget selection */}
+        {vis(10) && (
           <div className="demo-budget demo-enter">
             <div className="demo-budget-label">CHOOSE YOUR BUDGET</div>
             <div className="demo-budget-row">
-              {(STEPS[9].data.amounts as string[]).map(
+              {(STEPS[10].data.amounts as string[]).map(
                 (amt: string, i: number) => (
                   <button
                     key={i}
-                    className={`demo-budget-btn ${i === STEPS[9].data.selected ? "demo-budget-btn-active" : ""}`}
+                    className={`demo-budget-btn ${i === STEPS[10].data.selected ? "demo-budget-btn-active" : ""}`}
                   >
                     {amt}
                   </button>
@@ -272,19 +282,19 @@ export function AgentDemo() {
           </div>
         )}
 
-        {/* 10 — Confirm dialog */}
-        {vis(10) && (
+        {/* 11 — Confirm dialog */}
+        {vis(11) && (
           <div className="demo-confirm demo-enter">
             <div className="demo-confirm-label">CONFIRM BOOKING</div>
             <div className="demo-confirm-body">
               <div className="demo-confirm-row">
-                <span>{STEPS[10].data.name}</span>
+                <span>{STEPS[11].data.name}</span>
                 <span className="demo-confirm-price">
-                  {STEPS[10].data.price}
+                  {STEPS[11].data.price}
                 </span>
               </div>
               <div className="demo-confirm-breakdown">
-                {STEPS[10].data.breakdown}
+                {STEPS[11].data.breakdown}
               </div>
               <div className="demo-confirm-actions">
                 <button className="demo-confirm-btn">Confirm</button>
@@ -294,39 +304,39 @@ export function AgentDemo() {
           </div>
         )}
 
-        {/* 11 — Typing again */}
-        {showTyping(11) && <TypingDots />}
+        {/* 12 — Typing again */}
+        {showTyping(12) && <TypingDots />}
 
-        {/* 12 — Transaction */}
-        {vis(12) && (
+        {/* 13 — Transaction */}
+        {vis(13) && (
           <div className="demo-tx demo-enter">
             <div className="demo-tx-icon">⛓️</div>
             <div className="demo-tx-details">
               <div className="demo-tx-row">
                 <span className="demo-tx-label">Tx Hash</span>
                 <span className="demo-tx-value demo-tx-hash">
-                  {STEPS[12].data.hash}
+                  {STEPS[13].data.hash}
                 </span>
               </div>
               <div className="demo-tx-row">
                 <span className="demo-tx-label">Chain</span>
-                <span className="demo-tx-value">{STEPS[12].data.chain}</span>
+                <span className="demo-tx-value">{STEPS[13].data.chain}</span>
               </div>
               <div className="demo-tx-row">
                 <span className="demo-tx-label">Amount</span>
                 <span className="demo-tx-value demo-tx-amount">
-                  {STEPS[12].data.amount}
+                  {STEPS[13].data.amount}
                 </span>
               </div>
             </div>
           </div>
         )}
 
-        {/* 13 — Success */}
-        {vis(13) && (
+        {/* 14 — Success */}
+        {vis(14) && (
           <div className="demo-success demo-enter">
             <span className="demo-success-check">✓</span>
-            {STEPS[13].content}
+            {STEPS[14].content}
           </div>
         )}
       </div>
@@ -334,7 +344,7 @@ export function AgentDemo() {
       {/* ── Footer ─────────────────────────────────────── */}
       <div className="demo-footer">
         <span className="demo-footer-cta">Try the real agent →</span>
-        <span className="demo-footer-badge">SIGN UP</span>
+        <button className="demo-footer-badge" onClick={onStartPlanning}>START PLANNING</button>
       </div>
 
       {/* ── Scoped styles ──────────────────────────────── */}
@@ -422,7 +432,8 @@ export function AgentDemo() {
         /* ─── Chat bubbles ────────────────────────────── */
         .demo-bubble {
           padding: 11px 16px;
-          font-size: 0.88rem;
+          font-family: 'Share Tech Mono', monospace;
+          font-size: 0.95rem;
           line-height: 1.55;
           max-width: 88%;
           position: relative;
@@ -461,8 +472,8 @@ export function AgentDemo() {
           display: flex;
           align-items: center;
           gap: 8px;
-          font-family: var(--font-mono);
-          font-size: 0.72rem;
+          font-family: 'Share Tech Mono', monospace;
+          font-size: 0.82rem;
           color: var(--text-muted);
           padding: 4px 0 2px;
           letter-spacing: 0.01em;
@@ -761,9 +772,11 @@ export function AgentDemo() {
           font-size: 0.72rem;
           font-weight: 700;
           letter-spacing: 0.06em;
+          border: none;
           border-radius: 8px;
           cursor: pointer;
           transition: all 0.2s;
+          font-family: inherit;
         }
         .demo-footer-badge:hover {
           box-shadow: 0 0 12px rgba(200, 245, 71, 0.3);
