@@ -9,7 +9,7 @@ export function CTAFooter({ onStart }: CTAFooterProps) {
     <section className="section" style={{ paddingBottom: 120 }}>
       <div className="container" style={{ textAlign: "center" }}>
         <h2 className="cta-heading">
-          Your entire trip, planned and <span className="serif-italic">booked autonomously.</span>
+          Your entire trip, planned and booked autonomously.
         </h2>
 
         <p style={{ color: "var(--text-secondary)", fontSize: "1rem", maxWidth: 520, margin: "0 auto 36px", lineHeight: 1.7 }}>
