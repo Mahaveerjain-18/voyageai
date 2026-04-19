@@ -421,8 +421,15 @@ export function TripPlanner({ onTripCreated, onBack }: TripPlannerProps) {
                 <DatePicker 
                   label="Start Date"
                   value={form.startDate}
-                  onChange={(d) => setForm({ ...form, startDate: d })}
+                  onChange={(d) => {
+                    const newForm = { ...form, startDate: d };
+                    if (form.endDate && form.endDate < d) {
+                      newForm.endDate = "";
+                    }
+                    setForm(newForm);
+                  }}
                   placeholder="Select departure"
+                  minDate={new Date().toLocaleDateString('en-CA')} // yyyy-mm-dd
                 />
               </AnimatedSlideIn>
               <AnimatedSlideIn delay={400} as="div">
@@ -431,6 +438,7 @@ export function TripPlanner({ onTripCreated, onBack }: TripPlannerProps) {
                   value={form.endDate}
                   onChange={(d) => setForm({ ...form, endDate: d })}
                   placeholder="Select return"
+                  minDate={form.startDate || new Date().toLocaleDateString('en-CA')}
                 />
               </AnimatedSlideIn>
             </div>

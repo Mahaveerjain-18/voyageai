@@ -8,6 +8,7 @@ interface DatePickerProps {
   value: string;
   onChange: (date: string) => void;
   placeholder?: string;
+  minDate?: string;
 }
 
 const WEEKDAYS = ["Su", "Mo", "Tu", "We", "Th", "Fr", "Sa"];
@@ -16,7 +17,7 @@ const MONTHS = [
   "July", "August", "September", "October", "November", "December"
 ];
 
-export function DatePicker({ label, value, onChange, placeholder }: DatePickerProps) {
+export function DatePicker({ label, value, onChange, placeholder, minDate }: DatePickerProps) {
   const [isOpen, setIsOpen] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
   const triggerRef = useRef<HTMLButtonElement>(null);
@@ -104,13 +105,15 @@ export function DatePicker({ label, value, onChange, placeholder }: DatePickerPr
     const dateStr = `${year}-${mm}-${dd}`;
     const isSelected = value === dateStr;
     const isToday = todayStr === dateStr;
+    const isDisabled = minDate ? dateStr < minDate : false;
 
     dayCells.push(
       <button
         key={`day-${day}`}
         type="button"
-        onClick={() => selectDate(day)}
-        className={`dp-day ${isSelected ? "dp-selected" : ""} ${isToday && !isSelected ? "dp-today" : ""}`}
+        onClick={() => !isDisabled && selectDate(day)}
+        disabled={isDisabled}
+        className={`dp-day ${isSelected ? "dp-selected" : ""} ${isToday && !isSelected ? "dp-today" : ""} ${isDisabled ? "dp-disabled" : ""}`}
       >
         {day}
       </button>
@@ -177,7 +180,8 @@ export function DatePicker({ label, value, onChange, placeholder }: DatePickerPr
         .dp-weekday { font-size: 0.65rem; color: rgba(255, 255, 255, 0.3); text-align: center; }
         .dp-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 2px; }
         .dp-day { aspect-ratio: 1; display: flex; align-items: center; justify-content: center; font-size: 0.82rem; border: none; background: transparent; color: #fff; cursor: pointer; border-radius: 10px; }
-        .dp-day:hover:not(.dp-empty) { background: rgba(255, 255, 255, 0.1); }
+        .dp-day:hover:not(.dp-empty):not(.dp-disabled) { background: rgba(255, 255, 255, 0.1); }
+        .dp-day.dp-disabled { opacity: 0.3; cursor: not-allowed; }
         .dp-day.dp-selected { background: #fff; color: #000; font-weight: 700; }
         .dp-day.dp-today { color: var(--accent); text-decoration: underline; }
         .dp-today-btn { width: 100%; margin-top: 12px; padding: 8px; background: rgba(255, 255, 255, 0.05); border: none; border-radius: 8px; color: #fff; cursor: pointer; font-size: 0.75rem; text-transform: uppercase; }
