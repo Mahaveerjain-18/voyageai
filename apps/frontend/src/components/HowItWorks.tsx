@@ -1,5 +1,8 @@
 "use client";
 
+import { AnimatedHeading } from "./AnimatedHeading";
+import { AnimatedSlideIn } from "./AnimatedSlideIn";
+
 export function HowItWorks() {
   const steps = [
     {
@@ -27,26 +30,36 @@ export function HowItWorks() {
   return (
     <section id="how" className="section">
       <div className="container">
-        <p className="section-label">HOW IT WORKS</p>
-        <h2 className="section-heading">
-          Describe. Research. Approve.{" "}
-          <span className="italic">Book.</span>
-        </h2>
-        <p className="section-subtext" style={{ marginBottom: 48 }}>
-          Four steps. The agent does the research. The blockchain does the proof.
-        </p>
+        <AnimatedSlideIn delay={0}>
+          <p className="section-label">HOW IT WORKS</p>
+        </AnimatedSlideIn>
+        <AnimatedSlideIn delay={100}>
+          <AnimatedHeading
+            segments={[
+              { text: "Describe. Research. Approve. " },
+              { text: "Book.", italic: true }
+            ]}
+          />
+        </AnimatedSlideIn>
+        <AnimatedSlideIn delay={200}>
+          <p className="section-subtext" style={{ marginBottom: 48 }}>
+            Four steps. The agent does the research. The blockchain does the proof.
+          </p>
+        </AnimatedSlideIn>
 
         <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 0, marginTop: 16 }}>
           {steps.map((step, i) => (
-            <div key={i} className="step-card">
-              <p className="step-label">{step.label}</p>
-              <h3 style={{ fontSize: "1.25rem", fontWeight: 700, marginBottom: 8, color: "var(--text-primary)" }}>
-                {step.title}
-              </h3>
-              <p style={{ fontSize: "0.95rem", color: "var(--text-secondary)", lineHeight: 1.65 }}>
-                {step.text}
-              </p>
-            </div>
+            <AnimatedSlideIn key={i} delay={i * 150} as="div">
+              <div className="step-card">
+                <p className="step-label">{step.label}</p>
+                <h3 style={{ fontSize: "1.25rem", fontWeight: 700, marginBottom: 8, color: "var(--text-primary)" }}>
+                  {step.title}
+                </h3>
+                <p style={{ fontSize: "0.95rem", color: "var(--text-secondary)", lineHeight: 1.65 }}>
+                  {step.text}
+                </p>
+              </div>
+            </AnimatedSlideIn>
           ))}
         </div>
       </div>

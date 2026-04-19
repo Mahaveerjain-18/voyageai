@@ -53,28 +53,37 @@ function MarqueeRow({ items, reverse = false }: { items: typeof ROW_A; reverse?:
   );
 }
 
+import { AnimatedHeading } from "./AnimatedHeading";
+import { AnimatedSlideIn } from "./AnimatedSlideIn";
+
 export function DestinationMarquee() {
   return (
     <section className="marquee-section">
       {/* Section heading */}
       <div className="container" style={{ marginBottom: 48 }}>
-        <p className="section-label" style={{ textAlign: "center" }}>
-          DESTINATIONS
-        </p>
-        <h2
-          className="section-heading"
-          style={{ textAlign: "center", maxWidth: 600, margin: "0 auto" }}
-        >
-          Where will your agent{" "}
-          <span className="italic">take you?</span>
-        </h2>
-        <p
-          className="section-subtext"
-          style={{ textAlign: "center", maxWidth: 500, margin: "12px auto 0" }}
-        >
-          From hidden temples in Kyoto to overwater villas in the Maldives —
-          just describe it. The AI handles the rest.
-        </p>
+        <AnimatedSlideIn delay={0}>
+          <p className="section-label" style={{ textAlign: "center", color: "var(--text-secondary)" }}>
+            DESTINATIONS
+          </p>
+        </AnimatedSlideIn>
+        <AnimatedSlideIn delay={100}>
+          <AnimatedHeading
+            style={{ textAlign: "center", maxWidth: 600, margin: "0 auto" }}
+            segments={[
+              { text: "Where will your agent " },
+              { text: "take you?", italic: true }
+            ]}
+          />
+        </AnimatedSlideIn>
+        <AnimatedSlideIn delay={200}>
+          <p
+            className="section-subtext"
+            style={{ textAlign: "center", maxWidth: 500, margin: "12px auto 0", color: "var(--text-secondary)" }}
+          >
+            From hidden temples in Kyoto to overwater villas in the Maldives —
+            just describe it. The AI handles the rest.
+          </p>
+        </AnimatedSlideIn>
       </div>
 
       {/* Marquee rows */}
@@ -84,8 +93,12 @@ export function DestinationMarquee() {
         {/* Gradient fade — right */}
         <div className="marquee-fade marquee-fade-right" />
 
-        <MarqueeRow items={ROW_A} />
-        <MarqueeRow items={ROW_B} reverse />
+        <AnimatedSlideIn delay={250}>
+          <MarqueeRow items={ROW_A} />
+        </AnimatedSlideIn>
+        <AnimatedSlideIn delay={400}>
+          <MarqueeRow items={ROW_B} reverse />
+        </AnimatedSlideIn>
       </div>
 
       <style jsx global>{`
@@ -165,7 +178,7 @@ export function DestinationMarquee() {
         .marquee-card:hover {
           transform: scale(1.04) translateY(-6px);
           box-shadow: 0 20px 50px rgba(0, 0, 0, 0.4),
-                      0 0 30px rgba(200, 245, 71, 0.08);
+                      0 0 30px rgba(255, 255, 255, 0.08);
         }
 
         /* ─── Image ──────────────────────────────────── */
@@ -229,6 +242,29 @@ export function DestinationMarquee() {
           color: #fff;
           line-height: 1.2;
           text-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
+        }
+
+        /* ─── Animated Heading ───────────────────────── */
+        .anim-char {
+          display: inline-block;
+          opacity: 0;
+          transform: translateX(-15px) rotateY(15deg);
+        }
+        .is-visible .anim-char {
+          animation: revealChar 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+
+        @keyframes revealChar {
+          0% {
+            opacity: 0;
+            transform: translateX(-15px) rotateY(15deg);
+            filter: blur(4px);
+          }
+          100% {
+            opacity: 1;
+            transform: translateX(0) rotateY(0deg);
+            filter: blur(0);
+          }
         }
 
         /* ─── Responsive ──────────────────────────────── */

@@ -22,13 +22,13 @@ interface DashboardProps {
 
 const STATUS_CONFIG: Record<string, { label: string; color: string; bg: string }> = {
   CREATED:      { label: "Created",        color: "#666",    bg: "rgba(102,102,102,0.08)" },
-  FUNDED:       { label: "Funded",         color: "#c8f547", bg: "rgba(200,245,71,0.08)" },
-  RESEARCHING:  { label: "Researching…",   color: "#c8f547", bg: "rgba(200,245,71,0.08)" },
-  OPTIONS_READY:{ label: "Options Ready",  color: "#c8f547", bg: "rgba(200,245,71,0.08)" },
-  BOOKING:      { label: "Booking…",       color: "#c8f547", bg: "rgba(200,245,71,0.08)" },
-  CONFIRMED:    { label: "Confirmed",      color: "#c8f547", bg: "rgba(200,245,71,0.08)" },
-  DELIVERED:    { label: "Delivered",       color: "#c8f547", bg: "rgba(200,245,71,0.08)" },
-  COMPLETED:    { label: "Completed",      color: "#c8f547", bg: "rgba(200,245,71,0.08)" },
+  FUNDED:       { label: "Funded",         color: "#ffffff", bg: "rgba(255,255,255,0.04)" },
+  RESEARCHING:  { label: "Researching…",   color: "#ffffff", bg: "rgba(255,255,255,0.04)" },
+  OPTIONS_READY:{ label: "Options Ready",  color: "#ffffff", bg: "rgba(255,255,255,0.04)" },
+  BOOKING:      { label: "Booking…",       color: "#ffffff", bg: "rgba(255,255,255,0.04)" },
+  CONFIRMED:    { label: "Confirmed",      color: "#ffffff", bg: "rgba(255,255,255,0.04)" },
+  DELIVERED:    { label: "Delivered",       color: "#ffffff", bg: "rgba(255,255,255,0.04)" },
+  COMPLETED:    { label: "Completed",      color: "#ffffff", bg: "rgba(255,255,255,0.04)" },
   CANCELLED:    { label: "Cancelled",      color: "#ef4444", bg: "rgba(239,68,68,0.08)" },
   FAILED:       { label: "Failed",         color: "#ef4444", bg: "rgba(239,68,68,0.08)" },
 };
@@ -68,8 +68,8 @@ export function Dashboard({ tripId, onBack }: DashboardProps) {
       <div style={{ display: "flex", alignItems: "center", justifyContent: "center", minHeight: "60vh" }}>
         <div style={{
           width: 40, height: 40, borderRadius: "50%",
-          border: "3px solid rgba(200,245,71,0.2)",
-          borderTopColor: "#c8f547",
+          border: "3px solid rgba(255,255,255,0.2)",
+          borderTopColor: "#ffffff",
           animation: "spin 0.8s linear infinite",
         }} />
         <style>{`@keyframes spin { to { transform: rotate(360deg) } }`}</style>
@@ -122,8 +122,8 @@ export function Dashboard({ tripId, onBack }: DashboardProps) {
   const renderResearchCard = (item: ResearchOption, highlight = false) => (
     <div key={item.id} style={{
       padding: "16px 18px",
-      background: highlight ? "rgba(200,245,71,0.04)" : "#111",
-      border: `1px solid ${item.isBestPick ? "rgba(200,245,71,0.25)" : "rgba(255,255,255,0.05)"}`,
+      background: highlight ? "rgba(255,255,255,0.04)" : "#111",
+      border: `1px solid ${item.isBestPick ? "rgba(255,255,255,0.25)" : "rgba(255,255,255,0.05)"}`,
       borderRadius: 14,
       transition: "border-color 0.2s, background 0.2s",
     }}>
@@ -136,13 +136,13 @@ export function Dashboard({ tripId, onBack }: DashboardProps) {
             {item.isBestPick && (
               <span style={{
                 padding: "2px 8px",
-                background: "rgba(200,245,71,0.15)",
-                border: "1px solid rgba(200,245,71,0.3)",
+                background: "rgba(255,255,255,0.15)",
+                border: "1px solid rgba(255,255,255,0.3)",
                 borderRadius: 6,
                 fontSize: "0.65rem",
                 fontFamily: "var(--font-mono)",
                 fontWeight: 700,
-                color: "#c8f547",
+                color: "#ffffff",
                 letterSpacing: "0.03em",
                 textTransform: "uppercase",
               }}>
@@ -186,7 +186,7 @@ export function Dashboard({ tripId, onBack }: DashboardProps) {
           <p style={{
             fontFamily: "var(--font-mono)",
             fontWeight: 700,
-            color: "#c8f547",
+            color: "#ffffff",
             fontSize: "1.1rem",
             marginBottom: 4,
           }}>
@@ -221,8 +221,8 @@ export function Dashboard({ tripId, onBack }: DashboardProps) {
               transition: "all 0.2s",
             }}
             onMouseEnter={(e) => {
-              e.currentTarget.style.borderColor = "rgba(200,245,71,0.3)";
-              e.currentTarget.style.color = "#c8f547";
+              e.currentTarget.style.borderColor = "rgba(255,255,255,0.3)";
+              e.currentTarget.style.color = "#ffffff";
             }}
             onMouseLeave={(e) => {
               e.currentTarget.style.borderColor = "rgba(255,255,255,0.08)";
@@ -239,16 +239,16 @@ export function Dashboard({ tripId, onBack }: DashboardProps) {
             style={{
               padding: "5px 12px",
               background: "transparent",
-              border: "1px solid rgba(200,245,71,0.3)",
+              border: "1px solid rgba(255,255,255,0.3)",
               borderRadius: 6,
               fontSize: "0.72rem",
-              color: "#c8f547",
+              color: "#ffffff",
               fontFamily: "var(--font-mono)",
               cursor: loading ? "not-allowed" : "pointer",
               transition: "all 0.2s",
               opacity: loading ? 0.5 : 1,
             }}
-            onMouseEnter={(e) => { e.currentTarget.style.background = "rgba(200,245,71,0.1)"; }}
+            onMouseEnter={(e) => { e.currentTarget.style.background = "rgba(255,255,255,0.1)"; }}
             onMouseLeave={(e) => { e.currentTarget.style.background = "transparent"; }}
           >
             Swap with AI Choice
@@ -412,7 +412,7 @@ export function Dashboard({ tripId, onBack }: DashboardProps) {
               <div style={{
                 height: "100%",
                 borderRadius: 3,
-                background: budgetPct > 90 ? "#ef4444" : "#c8f547",
+                background: budgetPct > 90 ? "#ef4444" : "#ffffff",
                 width: `${Math.min(budgetPct, 100)}%`,
                 transition: "width 0.8s cubic-bezier(0.16, 1, 0.3, 1)",
               }} />
@@ -454,7 +454,7 @@ export function Dashboard({ tripId, onBack }: DashboardProps) {
                       <div style={{
                         height: "100%",
                         borderRadius: 2,
-                        background: "#c8f547",
+                        background: "#ffffff",
                         width: `${pct}%`,
                         transition: "width 0.8s cubic-bezier(0.16, 1, 0.3, 1)",
                       }} />
@@ -499,7 +499,7 @@ export function Dashboard({ tripId, onBack }: DashboardProps) {
                 <p style={{
                   fontFamily: "var(--font-mono)",
                   fontSize: "0.82rem",
-                  color: "#c8f547",
+                  color: "#ffffff",
                   marginTop: 8,
                   fontWeight: 600,
                 }}>
@@ -521,10 +521,10 @@ export function Dashboard({ tripId, onBack }: DashboardProps) {
                     onClick={() => setResearchTab(key)}
                     style={{
                       padding: "8px 14px",
-                      background: researchTab === key ? "rgba(200,245,71,0.12)" : "rgba(255,255,255,0.03)",
-                      border: `1px solid ${researchTab === key ? "rgba(200,245,71,0.3)" : "rgba(255,255,255,0.06)"}`,
+                      background: researchTab === key ? "rgba(255,255,255,0.12)" : "rgba(255,255,255,0.03)",
+                      border: `1px solid ${researchTab === key ? "rgba(255,255,255,0.3)" : "rgba(255,255,255,0.06)"}`,
                       borderRadius: 8,
-                      color: researchTab === key ? "#c8f547" : "var(--text-secondary)",
+                      color: researchTab === key ? "#ffffff" : "var(--text-secondary)",
                       fontSize: "0.78rem",
                       fontFamily: "var(--font-sans)",
                       fontWeight: researchTab === key ? 600 : 400,
@@ -605,8 +605,8 @@ export function Dashboard({ tripId, onBack }: DashboardProps) {
                   </p>
                   <div style={{
                     padding: "14px 16px",
-                    background: "rgba(200,245,71,0.04)",
-                    border: "1px solid rgba(200,245,71,0.15)",
+                    background: "rgba(255,255,255,0.04)",
+                    border: "1px solid rgba(255,255,255,0.15)",
                     borderRadius: 12,
                     display: "flex",
                     justifyContent: "space-between",
@@ -620,7 +620,7 @@ export function Dashboard({ tripId, onBack }: DashboardProps) {
                         {trip.researchResults.finalizedPlan.flight.description}
                       </p>
                     </div>
-                    <p style={{ fontFamily: "var(--font-mono)", fontWeight: 700, color: "#c8f547", fontSize: "1rem" }}>
+                    <p style={{ fontFamily: "var(--font-mono)", fontWeight: 700, color: "#ffffff", fontSize: "1rem" }}>
                       ${trip.researchResults.finalizedPlan.flight.price}
                     </p>
                   </div>
@@ -635,8 +635,8 @@ export function Dashboard({ tripId, onBack }: DashboardProps) {
                   </p>
                   <div style={{
                     padding: "14px 16px",
-                    background: "rgba(200,245,71,0.04)",
-                    border: "1px solid rgba(200,245,71,0.15)",
+                    background: "rgba(255,255,255,0.04)",
+                    border: "1px solid rgba(255,255,255,0.15)",
                     borderRadius: 12,
                     display: "flex",
                     justifyContent: "space-between",
@@ -650,7 +650,7 @@ export function Dashboard({ tripId, onBack }: DashboardProps) {
                         {trip.researchResults.finalizedPlan.hotel.description} · ${(trip.researchResults.finalizedPlan.hotel as any).pricePerNight}/night
                       </p>
                     </div>
-                    <p style={{ fontFamily: "var(--font-mono)", fontWeight: 700, color: "#c8f547", fontSize: "1rem" }}>
+                    <p style={{ fontFamily: "var(--font-mono)", fontWeight: 700, color: "#ffffff", fontSize: "1rem" }}>
                       ${trip.researchResults.finalizedPlan.hotel.price}
                     </p>
                   </div>
@@ -720,8 +720,8 @@ export function Dashboard({ tripId, onBack }: DashboardProps) {
               {/* Finalized total */}
               <div style={{
                 padding: "14px 16px",
-                background: "rgba(200,245,71,0.06)",
-                border: "1px solid rgba(200,245,71,0.2)",
+                background: "rgba(255,255,255,0.06)",
+                border: "1px solid rgba(255,255,255,0.2)",
                 borderRadius: 12,
                 display: "flex",
                 justifyContent: "space-between",
@@ -730,7 +730,7 @@ export function Dashboard({ tripId, onBack }: DashboardProps) {
                 <p style={{ fontFamily: "var(--font-mono)", fontSize: "0.82rem", color: "var(--text-secondary)", fontWeight: 600 }}>
                   Finalized Total
                 </p>
-                <p style={{ fontFamily: "var(--font-mono)", fontWeight: 700, color: "#c8f547", fontSize: "1.1rem" }}>
+                <p style={{ fontFamily: "var(--font-mono)", fontWeight: 700, color: "#ffffff", fontSize: "1.1rem" }}>
                   ${trip.researchResults.totalEstimatedCost}
                 </p>
               </div>
@@ -755,7 +755,7 @@ export function Dashboard({ tripId, onBack }: DashboardProps) {
                 disabled={loading}
                 style={{
                   ...actionBtnStyle,
-                  background: "#c8f547",
+                  background: "#ffffff",
                   color: "#0a0a0a",
                   opacity: loading ? 0.5 : 1,
                 }}
@@ -770,7 +770,7 @@ export function Dashboard({ tripId, onBack }: DashboardProps) {
                 disabled={loading}
                 style={{
                   ...actionBtnStyle,
-                  background: "#c8f547",
+                  background: "#ffffff",
                   color: "#0a0a0a",
                   opacity: loading ? 0.5 : 1,
                 }}
@@ -785,7 +785,7 @@ export function Dashboard({ tripId, onBack }: DashboardProps) {
                 disabled={loading}
                 style={{
                   ...actionBtnStyle,
-                  background: "#c8f547",
+                  background: "#ffffff",
                   color: "#0a0a0a",
                   opacity: loading ? 0.5 : 1,
                 }}
@@ -821,7 +821,7 @@ export function Dashboard({ tripId, onBack }: DashboardProps) {
                     width: "auto",
                     padding: "14px 20px",
                     fontSize: "0.85rem",
-                    background: "#c8f547",
+                    background: "#ffffff",
                     color: "#0a0a0a",
                     opacity: loading ? 0.5 : 1,
                   }}
@@ -837,7 +837,7 @@ export function Dashboard({ tripId, onBack }: DashboardProps) {
                   fontFamily: "var(--font-serif)",
                   fontStyle: "italic",
                   fontSize: "1.3rem",
-                  color: "#c8f547",
+                  color: "#ffffff",
                   marginBottom: 6,
                 }}>
                   Trip Booked & Delivered!
@@ -886,7 +886,7 @@ export function Dashboard({ tripId, onBack }: DashboardProps) {
                     gap: 14,
                     padding: "14px 16px",
                     background: "#111",
-                    border: "1px solid rgba(200,245,71,0.15)",
+                    border: "1px solid rgba(255,255,255,0.15)",
                     borderRadius: 12,
                   }}>
                     <span style={{ fontSize: "1.3rem" }}>
@@ -898,7 +898,7 @@ export function Dashboard({ tripId, onBack }: DashboardProps) {
                         {item.confirmationCode}
                       </p>
                     </div>
-                    <p style={{ fontFamily: "var(--font-mono)", fontWeight: 700, color: "#c8f547", fontSize: "1rem" }}>
+                    <p style={{ fontFamily: "var(--font-mono)", fontWeight: 700, color: "#ffffff", fontSize: "1rem" }}>
                       ${item.price}
                     </p>
                   </div>

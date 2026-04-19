@@ -1,7 +1,9 @@
 "use client";
 
-import { useState } from "react";
+import React, { useState } from "react";
 import { createTrip, createCheckoutSession, confirmCheckout } from "@/lib/api";
+import { DatePicker } from "./DatePicker";
+import { AnimatedSlideIn } from "./AnimatedSlideIn";
 
 interface TripPlannerProps {
   onTripCreated: (tripId: string) => void;
@@ -171,96 +173,85 @@ export function TripPlanner({ onTripCreated, onBack }: TripPlannerProps) {
             booking, and payments autonomously.
           </p>
 
-          <div style={{ display: "flex", flexDirection: "column", gap: 24 }}>
+          <div style={{ display: "flex", flexDirection: "column", gap: 32 }}>
             {/* Origin & Destination */}
             <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16 }}>
-              <div>
-                <label style={labelStyle}>Departing From</label>
-                <input
-                  type="text"
-                  value={form.origin}
-                  onChange={(e) => setForm({ ...form, origin: e.target.value })}
-                  placeholder="e.g. San Francisco"
-                  style={inputStyle}
-                  onFocus={(e) => {
-                    e.currentTarget.style.borderColor = "rgba(200, 245, 71, 0.4)";
-                  }}
-                  onBlur={(e) => {
-                    e.currentTarget.style.borderColor = "rgba(255,255,255,0.08)";
-                  }}
-                />
-              </div>
-              <div>
-                <label style={labelStyle}>Destination</label>
-                <input
-                  type="text"
-                  value={form.destination}
-                  onChange={(e) => setForm({ ...form, destination: e.target.value })}
-                  placeholder="e.g. Tokyo, Japan"
-                  style={inputStyle}
-                  onFocus={(e) => {
-                    e.currentTarget.style.borderColor = "rgba(200, 245, 71, 0.4)";
-                  }}
-                  onBlur={(e) => {
-                    e.currentTarget.style.borderColor = "rgba(255,255,255,0.08)";
-                  }}
-                />
-              </div>
+              <AnimatedSlideIn delay={100} as="div">
+                <div>
+                  <label style={labelStyle}>Departing From</label>
+                  <input
+                    type="text"
+                    value={form.origin}
+                    onChange={(e) => setForm({ ...form, origin: e.target.value })}
+                    placeholder="e.g. San Francisco"
+                    style={inputStyle}
+                    className="premium-input-raw"
+                  />
+                </div>
+              </AnimatedSlideIn>
+              <AnimatedSlideIn delay={200} as="div">
+                <div>
+                  <label style={labelStyle}>Destination</label>
+                  <input
+                    type="text"
+                    value={form.destination}
+                    onChange={(e) => setForm({ ...form, destination: e.target.value })}
+                    placeholder="e.g. Tokyo, Japan"
+                    style={inputStyle}
+                    className="premium-input-raw"
+                  />
+                </div>
+              </AnimatedSlideIn>
             </div>
 
             {/* Date grid */}
             <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16 }}>
-              <div>
-                <label style={labelStyle}>Start Date</label>
-                <input
-                  type="date"
+              <AnimatedSlideIn delay={300} as="div">
+                <DatePicker 
+                  label="Start Date"
                   value={form.startDate}
-                  onChange={(e) => setForm({ ...form, startDate: e.target.value })}
-                  style={{ ...inputStyle, colorScheme: "dark" }}
-                  onFocus={(e) => { e.currentTarget.style.borderColor = "rgba(200, 245, 71, 0.4)"; }}
-                  onBlur={(e) => { e.currentTarget.style.borderColor = "rgba(255,255,255,0.08)"; }}
+                  onChange={(d) => setForm({ ...form, startDate: d })}
+                  placeholder="Select departure"
                 />
-              </div>
-              <div>
-                <label style={labelStyle}>End Date</label>
-                <input
-                  type="date"
+              </AnimatedSlideIn>
+              <AnimatedSlideIn delay={400} as="div">
+                <DatePicker 
+                  label="End Date"
                   value={form.endDate}
-                  onChange={(e) => setForm({ ...form, endDate: e.target.value })}
-                  style={{ ...inputStyle, colorScheme: "dark" }}
-                  onFocus={(e) => { e.currentTarget.style.borderColor = "rgba(200, 245, 71, 0.4)"; }}
-                  onBlur={(e) => { e.currentTarget.style.borderColor = "rgba(255,255,255,0.08)"; }}
+                  onChange={(d) => setForm({ ...form, endDate: d })}
+                  placeholder="Select return"
                 />
-              </div>
+              </AnimatedSlideIn>
             </div>
 
             {/* Travelers */}
-            <div>
-              <label style={labelStyle}>Travelers</label>
-              <input
-                type="number"
-                min={1}
-                max={20}
-                value={form.travelers}
-                onChange={(e) => setForm({ ...form, travelers: parseInt(e.target.value) || 1 })}
-                style={inputStyle}
-                onFocus={(e) => { e.currentTarget.style.borderColor = "rgba(200, 245, 71, 0.4)"; }}
-                onBlur={(e) => { e.currentTarget.style.borderColor = "rgba(255,255,255,0.08)"; }}
-              />
-            </div>
+            <AnimatedSlideIn delay={500} as="div">
+              <div>
+                <label style={labelStyle}>Travelers</label>
+                <input
+                  type="number"
+                  min={1}
+                  max={20}
+                  value={form.travelers}
+                  onChange={(e) => setForm({ ...form, travelers: parseInt(e.target.value) || 1 })}
+                  style={inputStyle}
+                  className="premium-input-raw"
+                />
+              </div>
+            </AnimatedSlideIn>
 
             {/* Preferences */}
-            <div>
-              <label style={labelStyle}>Preferences</label>
-              <textarea
-                value={form.preferences}
-                onChange={(e) => setForm({ ...form, preferences: e.target.value })}
-                rows={3}
-                placeholder="Culture, food, nature, hidden gems, nightlife..."
-                style={{ ...inputStyle, resize: "none", minHeight: 90 }}
-                onFocus={(e) => { e.currentTarget.style.borderColor = "rgba(200, 245, 71, 0.4)"; }}
-                onBlur={(e) => { e.currentTarget.style.borderColor = "rgba(255,255,255,0.08)"; }}
-              />
+            <AnimatedSlideIn delay={600} as="div">
+              <div>
+                <label style={labelStyle}>Preferences</label>
+                <textarea
+                  value={form.preferences}
+                  onChange={(e) => setForm({ ...form, preferences: e.target.value })}
+                  rows={3}
+                  placeholder="Culture, food, nature, hidden gems, nightlife..."
+                  style={{ ...inputStyle, resize: "none", minHeight: 120 }}
+                  className="premium-input-raw"
+                />
               <div style={{ display: "flex", gap: "8px", flexWrap: "wrap", marginTop: "12px" }}>
                 {["Local Food", "Hidden Gems", "Nightlife", "Adventure", "Relaxation", "Museums", "Culture & History", "Nature", "Shopping", "Live Music"].map((tag) => (
                   <button
@@ -288,6 +279,7 @@ export function TripPlanner({ onTripCreated, onBack }: TripPlannerProps) {
                 ))}
               </div>
             </div>
+          </AnimatedSlideIn>
 
             <button
               onClick={handleDetailsSubmit}
@@ -358,8 +350,8 @@ export function TripPlanner({ onTripCreated, onBack }: TripPlannerProps) {
               {form.totalBudget >= 10000 ? (
                 <div style={{
                   padding: "24px",
-                  background: "rgba(200, 245, 71, 0.05)",
-                  border: "1px dashed rgba(200, 245, 71, 0.3)",
+                  background: "rgba(255, 255, 255, 0.05)",
+                  border: "1px dashed rgba(255, 255, 255, 0.3)",
                   borderRadius: 14,
                   textAlign: "center"
                 }}>
@@ -560,8 +552,8 @@ export function TripPlanner({ onTripCreated, onBack }: TripPlannerProps) {
               alignItems: "center",
               gap: 8,
               padding: "6px 14px",
-              background: "rgba(200, 245, 71, 0.08)",
-              border: "1px solid rgba(200, 245, 71, 0.2)",
+              background: "rgba(255, 255, 255, 0.08)",
+              border: "1px solid rgba(255, 255, 255, 0.2)",
               borderRadius: 8,
               marginBottom: 28,
             }}>
@@ -662,12 +654,12 @@ export function TripPlanner({ onTripCreated, onBack }: TripPlannerProps) {
 
 const labelStyle: React.CSSProperties = {
   display: "block",
-  fontFamily: "'Inter', sans-serif",
-  fontSize: "0.78rem",
-  fontWeight: 500,
-  color: "rgba(255,255,255,0.4)",
-  marginBottom: 8,
-  letterSpacing: "0.03em",
+  fontFamily: "var(--font-mono)",
+  fontSize: "0.72rem",
+  fontWeight: 600,
+  color: "rgba(255,255,255,0.9)",
+  marginBottom: 10,
+  letterSpacing: "0.12em",
   textTransform: "uppercase" as const,
 };
 
@@ -675,13 +667,13 @@ const inputStyle: React.CSSProperties = {
   width: "100%",
   padding: "15px 18px",
   background: "#141414",
-  border: "1px solid rgba(255,255,255,0.08)",
+  border: "1px solid rgba(255,255,255,0.1)",
   borderRadius: 12,
   color: "#f5f5f5",
-  fontFamily: "'Inter', sans-serif",
+  fontFamily: "var(--font-sans)",
   fontSize: "0.95rem",
   outline: "none",
-  transition: "border-color 0.25s ease",
+  transition: "all 0.3s cubic-bezier(0.16, 1, 0.3, 1)",
 };
 
 const btnPrimaryStyle: React.CSSProperties = {
@@ -690,7 +682,7 @@ const btnPrimaryStyle: React.CSSProperties = {
   justifyContent: "center",
   gap: 8,
   padding: "15px 28px",
-  background: "#c8f547",
+  background: "#ffffff",
   color: "#0a0a0a",
   fontFamily: "'Inter', sans-serif",
   fontWeight: 600,

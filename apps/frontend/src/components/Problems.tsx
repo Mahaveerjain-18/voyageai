@@ -1,5 +1,7 @@
 "use client";
 
+import { AnimatedHeading } from "./AnimatedHeading";
+
 export function Problems() {
   const problems = [
     {
@@ -26,10 +28,13 @@ export function Problems() {
     <section id="problems" className="section">
       <div className="container">
         <p className="section-label">THE PROBLEM</p>
-        <h2 className="section-heading" style={{ maxWidth: 700 }}>
-          Vacation booking is broken <br />
-          <span className="italic">in three familiar ways.</span>
-        </h2>
+        <AnimatedHeading
+          style={{ maxWidth: 700 }}
+          segments={[
+            { text: "Vacation booking is broken", breakBefore: false },
+            { text: "in three familiar ways.", italic: true, breakBefore: true }
+          ]}
+        />
 
         <div className="problem-grid">
           {problems.map((item) => (
@@ -67,7 +72,7 @@ export function Problems() {
         }
 
         .problem-card:hover {
-          border-color: rgba(200, 245, 71, 0.4);
+          border-color: rgba(255, 255, 255, 0.4);
           transform: translateY(-8px);
           background: var(--bg-card-hover);
         }

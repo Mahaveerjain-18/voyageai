@@ -1,6 +1,8 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { AnimatedHeading } from "./AnimatedHeading";
+import { AnimatedSlideIn } from "./AnimatedSlideIn";
 
 const FEATURES = [
   { icon: "🔒", label: "Escrow Subwallets", desc: "Funds locked until trip ends" },
@@ -53,13 +55,23 @@ export function Features() {
   return (
     <section id="features" className="section overflow-hidden">
       <div className="container" style={{ textAlign: "center", marginBottom: 60 }}>
-        <p className="section-label">CAPABILITIES</p>
-        <h2 className="section-heading">
-          What <span className="italic">powers</span> the agent?
-        </h2>
-        <p className="section-subtext" style={{ margin: "0 auto" }}>
-          Locus capabilities chained into one autonomous flow.
-        </p>
+        <AnimatedSlideIn delay={0}>
+          <p className="section-label">CAPABILITIES</p>
+        </AnimatedSlideIn>
+        <AnimatedSlideIn delay={100}>
+          <AnimatedHeading
+            segments={[
+              { text: "What " },
+              { text: "powers", italic: true },
+              { text: " the agent?" }
+            ]}
+          />
+        </AnimatedSlideIn>
+        <AnimatedSlideIn delay={200}>
+          <p className="section-subtext" style={{ margin: "0 auto" }}>
+            Locus capabilities chained into one autonomous flow.
+          </p>
+        </AnimatedSlideIn>
       </div>
 
       {/* Infinite Focus-Snap Carousel */}
@@ -239,7 +251,7 @@ export function Features() {
           position: absolute;
           inset: 0;
           border-radius: 20px;
-          box-shadow: 0 0 40px rgba(200, 245, 71, 0.15),
+          box-shadow: 0 0 40px rgba(255, 255, 255, 0.15),
                       inset 0 0 0 1px var(--accent);
           pointer-events: none;
           transition: opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1);
@@ -294,7 +306,7 @@ export function Features() {
           top: 0;
           width: 100px;
           height: 2px;
-          background: linear-gradient(90deg, transparent, rgba(200, 245, 71, 0.4) 60%, var(--accent) 100%);
+          background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4) 60%, var(--accent) 100%);
           transform: translateX(-100%); /* Right edge aligns strictly to 'left' % */
           z-index: 2;
         }
@@ -351,8 +363,8 @@ export function Features() {
         }
 
         .circuit-dot.past {
-          background: rgba(200, 245, 71, 0.2);
-          border-color: rgba(200, 245, 71, 0.5);
+          background: rgba(255, 255, 255, 0.2);
+          border-color: rgba(255, 255, 255, 0.5);
         }
 
         .circuit-label {

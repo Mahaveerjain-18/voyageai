@@ -24,21 +24,21 @@
   --text-muted: #666666;
   --text-faint: #404040;
 
-  /* Accent — Lime/Chartreuse (from Locus) */
-  --accent: #c8f547;
-  --accent-hover: #d4f96b;
-  --accent-dim: rgba(200, 245, 71, 0.1);
-  --accent-border: rgba(200, 245, 71, 0.2);
-  --accent-text: #0a0a0a;
+  /* Accent — Premium Monochrome (CleanTech) */
+  --accent: #ffffff;
+  --accent-hover: #e5e5e5;
+  --accent-dim: rgba(255, 255, 255, 0.05);
+  --accent-border: rgba(255, 255, 255, 0.15);
+  --accent-text: #000000;
 
   /* Blue glow */
-  --glow-blue: rgba(59, 130, 246, 0.15);
-  --glow-blue-strong: rgba(59, 130, 246, 0.3);
+  --glow-blue: rgba(255, 255, 255, 0.05);
+  --glow-blue-strong: rgba(255, 255, 255, 0.1);
 
   /* Borders */
-  --border: rgba(255, 255, 255, 0.06);
-  --border-hover: rgba(255, 255, 255, 0.12);
-  --border-accent: rgba(200, 245, 71, 0.3);
+  --border: rgba(255, 255, 255, 0.08);
+  --border-hover: rgba(255, 255, 255, 0.15);
+  --border-accent: rgba(255, 255, 255, 0.25);
 
   /* Spacing */
   --section-gap: 120px;
@@ -176,7 +176,7 @@ body {
 .btn-primary:hover {
   background: var(--accent-hover);
   transform: translateY(-1px);
-  box-shadow: 0 4px 20px rgba(200, 245, 71, 0.25);
+  box-shadow: 0 4px 20px rgba(255, 255, 255, 0.25);
 }
 
 .btn-primary:active {
@@ -233,7 +233,7 @@ body {
 
 .card:hover {
   background: var(--bg-card-hover);
-  border-color: rgba(200, 245, 71, 0.5);
+  border-color: rgba(255, 255, 255, 0.5);
   transform: translateY(-4px);
 }
 
@@ -566,7 +566,7 @@ input[type="range"]::-webkit-slider-thumb {
   border-radius: 50%;
   cursor: pointer;
   border: none;
-  box-shadow: 0 0 8px rgba(200, 245, 71, 0.3);
+  box-shadow: 0 0 8px rgba(255, 255, 255, 0.3);
 }
 
 /* ---------- Progress Bar ---------- */
@@ -770,4 +770,63 @@ input[type="range"]::-webkit-slider-thumb {
 @keyframes slideUp {
   from { opacity: 0; transform: translateY(24px); }
   to { opacity: 1; transform: translateY(0); }
+}
+
+/* ─── Animated Heading Char-by-Char Reveal ───────────────────────── */
+.anim-char {
+  display: inline-block;
+  opacity: 0;
+  transform: translateX(-15px) rotateY(15deg);
+}
+.is-visible .anim-char {
+  animation: revealChar 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes revealChar {
+  0% {
+    opacity: 0;
+    transform: translateX(-15px) rotateY(15deg);
+    filter: blur(4px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateX(0) rotateY(0deg);
+    filter: blur(0);
+  }
+}
+
+/* ─── SCROLL TRIGGERED SLIDE-IN-LEFT ───────────────────────── */
+.animate-slide-in-left {
+  opacity: 0;
+  transform: translateX(-80px);
+  transition: opacity 0.7s cubic-bezier(0.16, 1, 0.3, 1),
+              transform 0.7s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.animate-slide-in-left.is-visible {
+  opacity: 1;
+  transform: translateX(0);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-slide-in-left {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+}
+
+/* ─── Premium Input Highlights ───────────────────────────────── */
+.premium-input-raw {
+  border-color: rgba(255, 255, 255, 0.1);
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.premium-input-raw:focus {
+  background: #1a1a1a !important;
+  border-color: var(--accent) !important;
+  box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.05);
+}
+.premium-input-raw:hover:not(:focus) {
+  background: #1a1a1a !important;
+  border-color: rgba(255, 255, 255, 0.3);
 }

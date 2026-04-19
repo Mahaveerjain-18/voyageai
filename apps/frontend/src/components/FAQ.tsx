@@ -29,6 +29,9 @@ const faqs = [
   },
 ];
 
+import { AnimatedHeading } from "./AnimatedHeading";
+import { AnimatedSlideIn } from "./AnimatedSlideIn";
+
 export function FAQ() {
   const [open, setOpen] = useState<number | null>(0);
 
@@ -36,32 +39,42 @@ export function FAQ() {
     <section id="faq" className="section">
       <div className="container" style={{ display: "grid", gridTemplateColumns: "1fr 1.5fr", gap: 80, alignItems: "start" }}>
         <div>
-          <p className="section-label">FREQUENTLY ASKED</p>
-          <h2 className="section-heading">
-            Questions,{" "}
-            <span className="italic">answered plainly.</span>
-          </h2>
-          <p className="section-subtext">
-            Still have something we didn&apos;t cover? The agent can probably
-            handle it — every trip prompt is open-ended.
-          </p>
+          <AnimatedSlideIn delay={0}>
+            <p className="section-label">FREQUENTLY ASKED</p>
+          </AnimatedSlideIn>
+          <AnimatedSlideIn delay={100}>
+            <AnimatedHeading
+              segments={[
+                { text: "Questions,\n" },
+                { text: "answered plainly.", italic: true }
+              ]}
+            />
+          </AnimatedSlideIn>
+          <AnimatedSlideIn delay={200}>
+            <p className="section-subtext">
+              Still have something we didn&apos;t cover? The agent can probably
+              handle it — every trip prompt is open-ended.
+            </p>
+          </AnimatedSlideIn>
         </div>
 
         <div>
           {faqs.map((faq, i) => (
-            <div key={i} className="faq-item">
-              <button className="faq-button" onClick={() => setOpen(open === i ? null : i)}>
-                <span>{faq.q}</span>
-                <span style={{ fontSize: "1.2rem", color: "var(--text-muted)", flexShrink: 0, marginLeft: 16 }}>
-                  {open === i ? "−" : "+"}
-                </span>
-              </button>
-              {open === i && (
-                <div className="faq-answer slide-up">
-                  {faq.a}
-                </div>
-              )}
-            </div>
+            <AnimatedSlideIn key={i} delay={i * 100} as="div">
+              <div className="faq-item">
+                <button className="faq-button" onClick={() => setOpen(open === i ? null : i)}>
+                  <span>{faq.q}</span>
+                  <span style={{ fontSize: "1.2rem", color: "var(--text-muted)", flexShrink: 0, marginLeft: 16 }}>
+                    {open === i ? "−" : "+"}
+                  </span>
+                </button>
+                {open === i && (
+                  <div className="faq-answer slide-up">
+                    {faq.a}
+                  </div>
+                )}
+              </div>
+            </AnimatedSlideIn>
           ))}
         </div>
       </div>

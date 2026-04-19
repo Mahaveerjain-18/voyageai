@@ -359,8 +359,8 @@ export function AgentDemo({ onStartPlanning }: { onStartPlanning?: () => void })
           max-width: 500px;
           display: flex;
           flex-direction: column;
-          box-shadow: 0 0 80px rgba(200, 245, 71, 0.04),
-                      0 0 2px rgba(200, 245, 71, 0.15);
+          box-shadow: 0 0 80px rgba(255, 255, 255, 0.04),
+                      0 0 2px rgba(255, 255, 255, 0.15);
         }
 
         /* ─── Header ──────────────────────────────────── */
@@ -520,7 +520,7 @@ export function AgentDemo({ onStartPlanning }: { onStartPlanning?: () => void })
           border-bottom: none;
         }
         .demo-option-best {
-          background: rgba(200, 245, 71, 0.06);
+          background: rgba(255, 255, 255, 0.06);
           border-left: 3px solid var(--accent);
         }
         @keyframes optionReveal {
@@ -600,7 +600,7 @@ export function AgentDemo({ onStartPlanning }: { onStartPlanning?: () => void })
           background: var(--accent);
           color: var(--accent-text);
           border-color: var(--accent);
-          box-shadow: 0 0 14px rgba(200, 245, 71, 0.25);
+          box-shadow: 0 0 14px rgba(255, 255, 255, 0.25);
           transform: scale(1.04);
         }
 
@@ -609,7 +609,7 @@ export function AgentDemo({ onStartPlanning }: { onStartPlanning?: () => void })
           border: 1px solid var(--accent);
           border-radius: 14px;
           overflow: hidden;
-          box-shadow: 0 0 20px rgba(200, 245, 71, 0.08);
+          box-shadow: 0 0 20px rgba(255, 255, 255, 0.08);
         }
         .demo-confirm-label {
           padding: 10px 16px;
@@ -617,8 +617,8 @@ export function AgentDemo({ onStartPlanning }: { onStartPlanning?: () => void })
           font-weight: 700;
           letter-spacing: 0.1em;
           color: var(--accent);
-          border-bottom: 1px solid rgba(200, 245, 71, 0.15);
-          background: rgba(200, 245, 71, 0.04);
+          border-bottom: 1px solid rgba(255, 255, 255, 0.15);
+          background: rgba(255, 255, 255, 0.04);
         }
         .demo-confirm-body {
           padding: 14px 16px;
@@ -662,8 +662,8 @@ export function AgentDemo({ onStartPlanning }: { onStartPlanning?: () => void })
           animation: confirmPulse 1.8s ease-in-out infinite;
         }
         @keyframes confirmPulse {
-          0%, 100% { box-shadow: 0 0 0 0 rgba(200, 245, 71, 0.3); }
-          50%      { box-shadow: 0 0 14px 4px rgba(200, 245, 71, 0.15); }
+          0%, 100% { box-shadow: 0 0 0 0 rgba(255, 255, 255, 0.3); }
+          50%      { box-shadow: 0 0 14px 4px rgba(255, 255, 255, 0.15); }
         }
         .demo-confirm-cancel {
           padding: 10px 18px;
@@ -727,8 +727,8 @@ export function AgentDemo({ onStartPlanning }: { onStartPlanning?: () => void })
           align-items: center;
           gap: 10px;
           padding: 12px 16px;
-          background: rgba(200, 245, 71, 0.06);
-          border: 1px solid rgba(200, 245, 71, 0.2);
+          background: rgba(255, 255, 255, 0.06);
+          border: 1px solid rgba(255, 255, 255, 0.2);
           border-radius: 14px;
           font-size: 0.85rem;
           font-weight: 600;
@@ -779,7 +779,7 @@ export function AgentDemo({ onStartPlanning }: { onStartPlanning?: () => void })
           font-family: inherit;
         }
         .demo-footer-badge:hover {
-          box-shadow: 0 0 12px rgba(200, 245, 71, 0.3);
+          box-shadow: 0 0 12px rgba(255, 255, 255, 0.3);
           transform: translateY(-1px);
         }
 
