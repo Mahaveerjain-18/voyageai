@@ -9,12 +9,11 @@ export function CTAFooter({ onStart }: CTAFooterProps) {
     <section className="section" style={{ paddingBottom: 120 }}>
       <div className="container" style={{ textAlign: "center" }}>
         <h2 className="cta-heading">
-          Every dollar tells you exactly where it went.
+          Your entire trip, planned and <span className="serif-italic">booked autonomously.</span>
         </h2>
 
         <p style={{ color: "var(--text-secondary)", fontSize: "1rem", maxWidth: 520, margin: "0 auto 36px", lineHeight: 1.7 }}>
-          It takes about a minute to set up. Your wallet is created automatically.
-          You can start with as little as $50 USDC.
+          Fund your escrow wallet instantly with USDC on Base. Let the AI agent research itineraries, present options, and finalize bookings. Cancel anytime for a seamless refund.
         </p>
 
         <div style={{ display: "flex", justifyContent: "center", gap: 12 }}>
