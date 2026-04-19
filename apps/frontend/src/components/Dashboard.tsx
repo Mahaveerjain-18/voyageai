@@ -764,33 +764,170 @@ export function Dashboard({ tripId, onBack }: DashboardProps) {
               </button>
             )}
 
-            {trip.status === "OPTIONS_READY" && (
+            {(trip.status === "OPTIONS_READY" || trip.status === "BOOKING") && (
               <button
-                onClick={() => withAction(() => approveOptions(tripId, trip.options.map(o => o.id)))}
+                onClick={() => withAction(async () => {
+                  if (trip.status === "OPTIONS_READY") {
+                    await approveOptions(tripId, trip.options.map(o => o.id));
+                  }
+                  await executeBookings(tripId);
+                })}
                 disabled={loading}
                 style={{
                   ...actionBtnStyle,
-                  background: "#ffffff",
-                  color: "#0a0a0a",
-                  opacity: loading ? 0.5 : 1,
+                  background: loading ? "#0a0a0a" : "#ffffff",
+                  color: loading ? "#ffffff" : "#0a0a0a",
+                  opacity: 1,
+                  overflow: "hidden",
+                  position: "relative" as const,
+                  minHeight: loading ? 64 : undefined,
+                  border: loading ? "1px solid rgba(255,255,255,0.15)" : "none",
+                  transition: "all 0.4s cubic-bezier(0.16, 1, 0.3, 1)",
                 }}
               >
-                {loading ? "Approving..." : "Approve All Options"}
-              </button>
-            )}
+                {loading ? (
+                  <div className="booking-anim-wrap">
+                    {/* Clouds background */}
+                    <span className="booking-cloud c1">☁️</span>
+                    <span className="booking-cloud c2">☁️</span>
+                    <span className="booking-cloud c3">☁️</span>
+                    
+                    {/* Airplanes flying across */}
+                    <span className="booking-plane p1">✈︎</span>
+                    <span className="booking-plane p2">✈︎</span>
+                    <span className="booking-plane p3">✈︎</span>
+                    <span className="booking-plane p4">✈︎</span>
+                    
+                    {/* Text below */}
+                    <span className="booking-anim-text">Booking your adventure...</span>
+                    
+                    {/* Progress bar */}
+                    <div className="booking-progress-track">
+                      <div className="booking-progress-fill" />
+                    </div>
 
-            {trip.status === "BOOKING" && (
-              <button
-                onClick={() => withAction(() => executeBookings(tripId))}
-                disabled={loading}
-                style={{
-                  ...actionBtnStyle,
-                  background: "#ffffff",
-                  color: "#0a0a0a",
-                  opacity: loading ? 0.5 : 1,
-                }}
-              >
-                {loading ? "Booking..." : "Execute Bookings"}
+                    <style>{`
+                      .booking-anim-wrap {
+                        display: flex;
+                        flex-direction: column;
+                        align-items: center;
+                        justify-content: center;
+                        gap: 6px;
+                        position: relative;
+                        width: 100%;
+                        height: 100%;
+                        min-height: 48px;
+                        overflow: hidden;
+                      }
+
+                      .booking-plane {
+                        position: absolute;
+                        font-size: 1.4rem;
+                        color: #fff;
+                        animation: planeFloat 2.5s ease-in-out infinite;
+                        filter: drop-shadow(0 2px 8px rgba(255,255,255,0.2));
+                        z-index: 2;
+                        font-style: normal;
+                      }
+                      .booking-plane.p1 {
+                        animation-delay: 0s;
+                        top: 4px;
+                        font-size: 1.5rem;
+                      }
+                      .booking-plane.p2 {
+                        animation-delay: 0.3s;
+                        top: 12px;
+                        font-size: 1.1rem;
+                        opacity: 0.7;
+                      }
+                      .booking-plane.p3 {
+                        animation-delay: 0.6s;
+                        top: 0px;
+                        font-size: 0.95rem;
+                        opacity: 0.5;
+                      }
+                      .booking-plane.p4 {
+                        animation-delay: 0.9s;
+                        top: 16px;
+                        font-size: 0.85rem;
+                        opacity: 0.35;
+                      }
+                      @keyframes planeFloat {
+                        0% { transform: translateX(-140px) translateY(4px) rotate(-2deg); opacity: 0; }
+                        15% { opacity: 1; }
+                        50% { transform: translateX(0px) translateY(-6px) rotate(0deg); opacity: 1; }
+                        85% { opacity: 1; }
+                        100% { transform: translateX(140px) translateY(4px) rotate(2deg); opacity: 0; }
+                      }
+
+                      .booking-cloud {
+                        position: absolute;
+                        font-size: 1.1rem;
+                        opacity: 0.15;
+                        z-index: 1;
+                        animation: cloudDrift linear infinite;
+                      }
+                      .booking-cloud.c1 {
+                        top: 2px;
+                        animation-duration: 4s;
+                        animation-delay: 0s;
+                      }
+                      .booking-cloud.c2 {
+                        top: 14px;
+                        font-size: 0.8rem;
+                        animation-duration: 5s;
+                        animation-delay: 1s;
+                      }
+                      .booking-cloud.c3 {
+                        top: 6px;
+                        font-size: 0.9rem;
+                        animation-duration: 3.5s;
+                        animation-delay: 2s;
+                      }
+                      @keyframes cloudDrift {
+                        0% { transform: translateX(160px); opacity: 0; }
+                        10% { opacity: 0.15; }
+                        90% { opacity: 0.15; }
+                        100% { transform: translateX(-160px); opacity: 0; }
+                      }
+
+                      .booking-anim-text {
+                        font-family: var(--font-mono);
+                        font-size: 0.7rem;
+                        color: rgba(255,255,255,0.45);
+                        letter-spacing: 0.06em;
+                        z-index: 2;
+                        animation: textPulse 1.5s ease-in-out infinite;
+                      }
+                      @keyframes textPulse {
+                        0%, 100% { opacity: 0.45; }
+                        50% { opacity: 0.8; }
+                      }
+
+                      .booking-progress-track {
+                        width: 60%;
+                        height: 2px;
+                        background: rgba(255,255,255,0.06);
+                        border-radius: 2px;
+                        overflow: hidden;
+                        z-index: 2;
+                      }
+                      .booking-progress-fill {
+                        height: 100%;
+                        background: linear-gradient(90deg, transparent, #a3e635, transparent);
+                        border-radius: 2px;
+                        animation: progressSlide 1.8s ease-in-out infinite;
+                      }
+                      @keyframes progressSlide {
+                        0% { transform: translateX(-100%); width: 40%; }
+                        50% { width: 60%; }
+                        100% { transform: translateX(250%); width: 40%; }
+                      }
+                    `}</style>
+                  </div>
+                ) : (
+                  "Approve and Execute Booking"
+                )}
               </button>
             )}
 

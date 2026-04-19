@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useCallback } from "react";
 import { createTrip, createCheckoutSession, confirmCheckout } from "@/lib/api";
 import { DatePicker } from "./DatePicker";
 import { AnimatedSlideIn } from "./AnimatedSlideIn";
@@ -13,6 +13,7 @@ interface TripPlannerProps {
 export function TripPlanner({ onTripCreated, onBack }: TripPlannerProps) {
   const [step, setStep] = useState<"details" | "budget" | "funding">("details");
   const [loading, setLoading] = useState(false);
+  const [paymentPhase, setPaymentPhase] = useState<null | "processing" | "success">(null);
 
   const [form, setForm] = useState({
     origin: "",
@@ -64,23 +65,233 @@ export function TripPlanner({ onTripCreated, onBack }: TripPlannerProps) {
     setLoading(false);
   };
 
-  const handleFundTrip = async () => {
+  const handleFundTrip = useCallback(async () => {
     if (!sessionId || !tripId) return;
     setLoading(true);
+    setPaymentPhase("processing");
     try {
       await confirmCheckout(sessionId);
+      // Show success animation
+      setPaymentPhase("success");
+      // Wait 1.8s for the animation, then proceed
+      await new Promise((resolve) => setTimeout(resolve, 2500));
       onTripCreated(tripId);
     } catch (err) {
       console.error(err);
+      setPaymentPhase(null);
     }
     setLoading(false);
-  };
+  }, [sessionId, tripId, onTripCreated]);
 
   const stepIndex = ["details", "budget", "funding"].indexOf(step);
   const canProceed = form.origin && form.destination && form.startDate && form.endDate;
 
   return (
-    <div style={{ maxWidth: 900, margin: "0 auto", padding: "48px 24px" }}>
+    <div style={{ maxWidth: 900, margin: "0 auto", padding: "48px 24px", position: "relative" }}>
+
+      {/* ───── Payment Processing Overlay ───── */}
+      {paymentPhase && (
+        <div className="payment-overlay">
+          <div className="payment-content">
+            {paymentPhase === "processing" && (
+              <>
+                <div className="payment-spinner-wrap">
+                  <svg className="payment-ring" viewBox="0 0 66 66">
+                    <circle className="payment-ring-track" cx="33" cy="33" r="30" fill="none" />
+                    <circle className="payment-ring-fill" cx="33" cy="33" r="30" fill="none" />
+                  </svg>
+                  <span className="payment-spinner-icon">💳</span>
+                </div>
+                <p className="payment-label">Processing Payment</p>
+                <p className="payment-sub">Securing USDC escrow on Base...</p>
+              </>
+            )}
+            {paymentPhase === "success" && (
+              <div className="payment-success-wrap">
+                <div className="payment-check-circle">
+                  <svg className="payment-check-svg" viewBox="0 0 52 52">
+                    <circle className="payment-check-bg" cx="26" cy="26" r="25" fill="none" />
+                    <path className="payment-check-path" fill="none" d="M14.1 27.2l7.1 7.2 16.7-16.8" />
+                  </svg>
+                </div>
+                <p className="payment-label payment-success-text">Payment Successful</p>
+                <p className="payment-sub">Redirecting to your dashboard...</p>
+                <div className="payment-confetti">
+                  {Array.from({ length: 20 }).map((_, i) => (
+                    <span key={i} className="confetti-dot" style={{
+                      left: `${10 + Math.random() * 80}%`,
+                      animationDelay: `${Math.random() * 0.5}s`,
+                      animationDuration: `${0.8 + Math.random() * 0.6}s`,
+                      background: ['#fff', '#a3e635', '#34d399', '#60a5fa', '#f472b6'][i % 5],
+                    }} />
+                  ))}
+                </div>
+              </div>
+            )}
+          </div>
+
+          <style>{`
+            .payment-overlay {
+              position: fixed;
+              inset: 0;
+              z-index: 999999;
+              display: flex;
+              align-items: center;
+              justify-content: center;
+              background: rgba(0, 0, 0, 0.85);
+              backdrop-filter: blur(20px);
+              animation: overlayIn 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+            }
+            @keyframes overlayIn {
+              from { opacity: 0; }
+              to { opacity: 1; }
+            }
+            .payment-content {
+              display: flex;
+              flex-direction: column;
+              align-items: center;
+              gap: 20px;
+              animation: contentIn 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+            }
+            @keyframes contentIn {
+              from { opacity: 0; transform: scale(0.9) translateY(20px); }
+              to { opacity: 1; transform: scale(1) translateY(0); }
+            }
+
+            /* Spinner ring */
+            .payment-spinner-wrap {
+              position: relative;
+              width: 80px;
+              height: 80px;
+              display: flex;
+              align-items: center;
+              justify-content: center;
+            }
+            .payment-ring {
+              width: 80px;
+              height: 80px;
+              transform: rotate(-90deg);
+            }
+            .payment-ring-track {
+              stroke: rgba(255, 255, 255, 0.06);
+              stroke-width: 3;
+            }
+            .payment-ring-fill {
+              stroke: #a3e635;
+              stroke-width: 3;
+              stroke-linecap: round;
+              stroke-dasharray: 188.5;
+              stroke-dashoffset: 188.5;
+              animation: ringFill 2s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+              filter: drop-shadow(0 0 6px rgba(163, 230, 53, 0.4));
+            }
+            @keyframes ringFill {
+              to { stroke-dashoffset: 0; }
+            }
+            .payment-spinner-icon {
+              position: absolute;
+              font-size: 1.6rem;
+              animation: iconPulse 1s ease-in-out infinite;
+            }
+            @keyframes iconPulse {
+              0%, 100% { transform: scale(1); }
+              50% { transform: scale(1.15); }
+            }
+
+            .payment-label {
+              font-family: var(--font-sans);
+              font-size: 1.3rem;
+              font-weight: 600;
+              color: #fff;
+              letter-spacing: -0.01em;
+            }
+            .payment-sub {
+              font-family: var(--font-mono);
+              font-size: 0.78rem;
+              color: rgba(255, 255, 255, 0.4);
+              letter-spacing: 0.03em;
+            }
+
+            /* Success checkmark */
+            .payment-success-wrap {
+              display: flex;
+              flex-direction: column;
+              align-items: center;
+              gap: 20px;
+              animation: successPop 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+              position: relative;
+            }
+            @keyframes successPop {
+              from { opacity: 0; transform: scale(0.5); }
+              50% { transform: scale(1.08); }
+              to { opacity: 1; transform: scale(1); }
+            }
+
+            .payment-check-circle {
+              width: 80px;
+              height: 80px;
+            }
+            .payment-check-svg {
+              width: 80px;
+              height: 80px;
+            }
+            .payment-check-bg {
+              stroke: #a3e635;
+              stroke-width: 2.5;
+              stroke-dasharray: 166;
+              stroke-dashoffset: 166;
+              animation: circleStroke 0.6s ease forwards;
+              filter: drop-shadow(0 0 8px rgba(163, 230, 53, 0.3));
+            }
+            @keyframes circleStroke {
+              to { stroke-dashoffset: 0; }
+            }
+            .payment-check-path {
+              stroke: #a3e635;
+              stroke-width: 3.5;
+              stroke-linecap: round;
+              stroke-linejoin: round;
+              stroke-dasharray: 48;
+              stroke-dashoffset: 48;
+              animation: checkStroke 0.4s 0.4s ease forwards;
+              filter: drop-shadow(0 0 6px rgba(163, 230, 53, 0.4));
+            }
+            @keyframes checkStroke {
+              to { stroke-dashoffset: 0; }
+            }
+
+            .payment-success-text {
+              color: #a3e635;
+            }
+
+            /* Confetti */
+            .payment-confetti {
+              position: absolute;
+              top: 0;
+              left: 50%;
+              transform: translateX(-50%);
+              width: 300px;
+              height: 200px;
+              pointer-events: none;
+              overflow: hidden;
+            }
+            .confetti-dot {
+              position: absolute;
+              top: 40px;
+              width: 6px;
+              height: 6px;
+              border-radius: 50%;
+              animation: confettiFall ease forwards;
+              opacity: 0;
+            }
+            @keyframes confettiFall {
+              0% { transform: translateY(0) scale(0); opacity: 1; }
+              50% { opacity: 1; }
+              100% { transform: translateY(160px) scale(1); opacity: 0; }
+            }
+          `}</style>
+        </div>
+      )}
       {/* Back button */}
       <button
         onClick={onBack}
