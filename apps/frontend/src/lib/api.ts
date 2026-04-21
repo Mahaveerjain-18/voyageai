@@ -216,3 +216,21 @@ export async function swapOption(tripId: string, category: string, newItem: any)
   }
   return res.json();
 }
+
+export interface ChatMessage {
+  role: 'user' | 'assistant';
+  content: string;
+}
+
+export async function sendChatMessage(
+  messages: ChatMessage[],
+  tripContext?: Record<string, any>
+): Promise<ChatMessage> {
+  const res = await fetch(`${API_BASE}/api/chat`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ messages, tripContext }),
+  });
+  return res.json();
+}
+

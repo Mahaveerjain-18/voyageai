@@ -15,6 +15,7 @@ import { checkoutRouter } from './routes/checkout';
 import { walletRouter } from './routes/wallet';
 import { auditRouter } from './routes/audit';
 import { agentRouter } from './routes/agent';
+import { chatRouter } from './routes/chat';
 import { AuditLogger } from './services/auditLogger';
 
 const app = express();
@@ -37,6 +38,7 @@ app.use('/api/checkout', checkoutRouter);
 app.use('/api/wallet', walletRouter);
 app.use('/api/audit', auditRouter);
 app.use('/api/agent', agentRouter);
+app.use('/api/chat', chatRouter);
 
 // ─── HTTP + WebSocket Server ─────────────────────────────────
 const server = http.createServer(app);

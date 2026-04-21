@@ -3,9 +3,10 @@
 interface NavProps {
   onLogoClick: () => void;
   onStartPlanning?: () => void;
+  onMyTrips?: () => void;
 }
 
-export function Nav({ onLogoClick, onStartPlanning }: NavProps) {
+export function Nav({ onLogoClick, onStartPlanning, onMyTrips }: NavProps) {
   return (
     <nav className="nav">
       <div className="nav-inner">
@@ -15,6 +16,22 @@ export function Nav({ onLogoClick, onStartPlanning }: NavProps) {
         </button>
 
         <div className="nav-actions">
+          {onMyTrips && (
+            <button
+              onClick={onMyTrips}
+              className="btn-ghost"
+              style={{
+                background: "none",
+                border: "none",
+                cursor: "pointer",
+                display: "inline-flex",
+                alignItems: "center",
+                gap: 5,
+              }}
+            >
+               Trip History
+            </button>
+          )}
           <a href="#how" className="btn-ghost">How it works</a>
           <a href="#features" className="btn-ghost">Features</a>
           <a href="#faq" className="btn-ghost">FAQ</a>

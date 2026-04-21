@@ -4,6 +4,7 @@ import React, { useState, useCallback } from "react";
 import { createTrip, createCheckoutSession, confirmCheckout } from "@/lib/api";
 import { DatePicker } from "./DatePicker";
 import { AnimatedSlideIn } from "./AnimatedSlideIn";
+import { TripChatAgent } from "./TripChatAgent";
 
 interface TripPlannerProps {
   onTripCreated: (tripId: string) => void;
@@ -891,6 +892,19 @@ export function TripPlanner({ onTripCreated, onBack }: TripPlannerProps) {
           </AnimatedSlideIn>
         </div>
       )}
+
+      {/* AI Travel Chat Agent */}
+      <TripChatAgent
+        tripContext={{
+          origin: form.origin,
+          destination: form.destination,
+          startDate: form.startDate,
+          endDate: form.endDate,
+          travelers: form.travelers,
+          preferences: form.preferences,
+          totalBudget: form.totalBudget,
+        }}
+      />
     </div>
   );
 }

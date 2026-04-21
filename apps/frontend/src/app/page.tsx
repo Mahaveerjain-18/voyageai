@@ -11,17 +11,44 @@ import { FAQ } from "@/components/FAQ";
 import { CTAFooter } from "@/components/CTAFooter";
 import { TripPlanner } from "@/components/TripPlanner";
 import { Dashboard } from "@/components/Dashboard";
+import { MyTrips } from "@/components/MyTrips";
 
-type View = "landing" | "planner" | "dashboard";
+type View = "landing" | "planner" | "dashboard" | "mytrips";
 
 export default function Home() {
   const [view, setView] = useState<View>("landing");
   const [tripId, setTripId] = useState<string | null>(null);
 
+  if (view === "mytrips") {
+    return (
+      <>
+        <Nav
+          onLogoClick={() => setView("landing")}
+          onStartPlanning={() => setView("planner")}
+          onMyTrips={() => setView("mytrips")}
+        />
+        <div className="fade-in" style={{ paddingTop: 80 }}>
+          <MyTrips
+            onBack={() => setView("landing")}
+            onViewTrip={(id) => {
+              setTripId(id);
+              setView("dashboard");
+            }}
+            onStartPlanning={() => setView("planner")}
+          />
+        </div>
+      </>
+    );
+  }
+
   if (view === "planner") {
     return (
       <>
-        <Nav onLogoClick={() => setView("landing")} onStartPlanning={() => setView("planner")} />
+        <Nav
+          onLogoClick={() => setView("landing")}
+          onStartPlanning={() => setView("planner")}
+          onMyTrips={() => setView("mytrips")}
+        />
         <div className="fade-in" style={{ paddingTop: 80 }}>
           <TripPlanner
             onTripCreated={(id) => {
@@ -38,7 +65,11 @@ export default function Home() {
   if (view === "dashboard" && tripId) {
     return (
       <>
-        <Nav onLogoClick={() => setView("landing")} onStartPlanning={() => setView("planner")} />
+        <Nav
+          onLogoClick={() => setView("landing")}
+          onStartPlanning={() => setView("planner")}
+          onMyTrips={() => setView("mytrips")}
+        />
         <div className="fade-in" style={{ paddingTop: 80 }}>
           <Dashboard tripId={tripId} onBack={() => setView("landing")} />
         </div>
@@ -48,7 +79,11 @@ export default function Home() {
 
   return (
     <>
-      <Nav onLogoClick={() => setView("landing")} onStartPlanning={() => setView("planner")} />
+      <Nav
+        onLogoClick={() => setView("landing")}
+        onStartPlanning={() => setView("planner")}
+        onMyTrips={() => setView("mytrips")}
+      />
       <main>
         <Hero onStartPlanning={() => setView("planner")} />
         <div className="section-divider" />
