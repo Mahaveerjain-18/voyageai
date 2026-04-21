@@ -32,9 +32,36 @@ export function Nav({ onLogoClick, onStartPlanning, onMyTrips }: NavProps) {
                Trip History
             </button>
           )}
-          <a href="#how" className="btn-ghost">How it works</a>
-          <a href="#features" className="btn-ghost">Features</a>
-          <a href="#faq" className="btn-ghost">FAQ</a>
+          <a
+            href="#how"
+            className="btn-ghost"
+            onClick={() => {
+              onLogoClick();
+              setTimeout(() => document.getElementById("how")?.scrollIntoView({ behavior: 'smooth' }), 100);
+            }}
+          >
+            How it works
+          </a>
+          <a
+            href="#features"
+            className="btn-ghost"
+            onClick={() => {
+              onLogoClick();
+              setTimeout(() => document.getElementById("features")?.scrollIntoView({ behavior: 'smooth' }), 100);
+            }}
+          >
+            Features
+          </a>
+          <a
+            href="#faq"
+            className="btn-ghost"
+            onClick={() => {
+              onLogoClick();
+              setTimeout(() => document.getElementById("faq")?.scrollIntoView({ behavior: 'smooth' }), 100);
+            }}
+          >
+            FAQ
+          </a>
           <button
             onClick={onStartPlanning || onLogoClick}
             className="btn-primary"
