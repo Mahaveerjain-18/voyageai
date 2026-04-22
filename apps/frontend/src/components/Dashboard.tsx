@@ -990,15 +990,189 @@ export function Dashboard({ tripId, onBack }: DashboardProps) {
             )}
 
             {!["FUNDED", "OPTIONS_READY", "BOOKING", "CONFIRMED", "DELIVERED"].includes(trip.status) && (
-              <p style={{
-                fontSize: "0.85rem",
-                color: "var(--text-muted)",
-                textAlign: "center",
-                padding: 20,
-                fontStyle: "italic",
+              <div style={{
+                display: "flex",
+                flexDirection: "column",
+                alignItems: "center",
+                justifyContent: "center",
+                padding: "40px 20px",
+                gap: 20,
               }}>
-                Waiting for status change...
-              </p>
+                {/* Animated globe with orbiting plane */}
+                <div className="trip-loading-globe-wrap">
+                  <div className="trip-loading-globe">
+                    <span className="trip-loading-globe-icon">🌍</span>
+                    <span className="trip-loading-orbit-plane">✈️</span>
+                  </div>
+                  {/* Ripple rings */}
+                  <div className="trip-loading-ripple r1" />
+                  <div className="trip-loading-ripple r2" />
+                  <div className="trip-loading-ripple r3" />
+                </div>
+
+                {/* Status text with animated dots */}
+                <div style={{ textAlign: "center" }}>
+                  <p className="trip-loading-title">
+                    Preparing your trip
+                    <span className="trip-loading-dots">
+                      <span className="dot d1">.</span>
+                      <span className="dot d2">.</span>
+                      <span className="dot d3">.</span>
+                    </span>
+                  </p>
+                  <p style={{
+                    fontFamily: "var(--font-mono)",
+                    fontSize: "0.72rem",
+                    color: "var(--text-faint)",
+                    marginTop: 6,
+                    letterSpacing: "0.04em",
+                  }}>
+                    {trip.status === "CREATED" ? "Awaiting funding to begin" : 
+                     trip.status === "RESEARCHING" ? "AI agents are researching your trip" :
+                     `Current status: ${trip.status}`}
+                  </p>
+                </div>
+
+                {/* Animated progress shimmer */}
+                <div className="trip-loading-shimmer-track">
+                  <div className="trip-loading-shimmer-fill" />
+                </div>
+
+                <style>{`
+                  .trip-loading-globe-wrap {
+                    position: relative;
+                    width: 80px;
+                    height: 80px;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                  }
+
+                  .trip-loading-globe {
+                    position: relative;
+                    width: 56px;
+                    height: 56px;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    animation: globeSpin 6s linear infinite;
+                  }
+
+                  .trip-loading-globe-icon {
+                    font-size: 2.2rem;
+                    filter: drop-shadow(0 0 12px rgba(96, 165, 250, 0.3));
+                  }
+
+                  .trip-loading-orbit-plane {
+                    position: absolute;
+                    font-size: 1rem;
+                    animation: orbitPlane 3s linear infinite;
+                    filter: drop-shadow(0 0 6px rgba(255,255,255,0.4));
+                  }
+
+                  @keyframes globeSpin {
+                    0% { transform: rotate(0deg); }
+                    100% { transform: rotate(360deg); }
+                  }
+
+                  @keyframes orbitPlane {
+                    0% {
+                      transform: rotate(0deg) translateX(34px) rotate(0deg);
+                    }
+                    100% {
+                      transform: rotate(360deg) translateX(34px) rotate(-360deg);
+                    }
+                  }
+
+                  .trip-loading-ripple {
+                    position: absolute;
+                    border-radius: 50%;
+                    border: 1px solid rgba(96, 165, 250, 0.15);
+                    animation: rippleExpand 3s ease-out infinite;
+                  }
+
+                  .trip-loading-ripple.r1 {
+                    width: 56px;
+                    height: 56px;
+                    animation-delay: 0s;
+                  }
+                  .trip-loading-ripple.r2 {
+                    width: 56px;
+                    height: 56px;
+                    animation-delay: 1s;
+                  }
+                  .trip-loading-ripple.r3 {
+                    width: 56px;
+                    height: 56px;
+                    animation-delay: 2s;
+                  }
+
+                  @keyframes rippleExpand {
+                    0% {
+                      transform: scale(1);
+                      opacity: 0.4;
+                    }
+                    100% {
+                      transform: scale(2.8);
+                      opacity: 0;
+                    }
+                  }
+
+                  .trip-loading-title {
+                    font-family: var(--font-serif);
+                    font-style: italic;
+                    font-size: 1.1rem;
+                    font-weight: 400;
+                    background: linear-gradient(135deg, #ffffff 0%, #a3a3a3 50%, #ffffff 100%);
+                    background-size: 200% 200%;
+                    -webkit-background-clip: text;
+                    -webkit-text-fill-color: transparent;
+                    background-clip: text;
+                    animation: shimmerText 3s ease-in-out infinite;
+                    margin: 0;
+                  }
+
+                  @keyframes shimmerText {
+                    0% { background-position: 0% 50%; }
+                    50% { background-position: 100% 50%; }
+                    100% { background-position: 0% 50%; }
+                  }
+
+                  .trip-loading-dots .dot {
+                    animation: dotPulse 1.4s ease-in-out infinite;
+                    font-weight: 700;
+                  }
+                  .trip-loading-dots .dot.d1 { animation-delay: 0s; }
+                  .trip-loading-dots .dot.d2 { animation-delay: 0.2s; }
+                  .trip-loading-dots .dot.d3 { animation-delay: 0.4s; }
+
+                  @keyframes dotPulse {
+                    0%, 60%, 100% { opacity: 0.2; }
+                    30% { opacity: 1; }
+                  }
+
+                  .trip-loading-shimmer-track {
+                    width: 120px;
+                    height: 2px;
+                    background: rgba(255,255,255,0.04);
+                    border-radius: 2px;
+                    overflow: hidden;
+                  }
+
+                  .trip-loading-shimmer-fill {
+                    height: 100%;
+                    width: 40%;
+                    border-radius: 2px;
+                    background: linear-gradient(90deg, transparent, rgba(163, 230, 53, 0.5), transparent);
+                    animation: shimmerSlide 2s ease-in-out infinite;
+                  }
+
+                  @keyframes shimmerSlide {
+                    0% { transform: translateX(-100%); }
+                    100% { transform: translateX(350%); }
+                  }
+                `}</style>
+              </div>
             )}
           </div>
 
