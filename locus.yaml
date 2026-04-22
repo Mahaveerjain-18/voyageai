@@ -1,0 +1,27 @@
+version: 1
+services:
+  frontend:
+    type: web
+    path: ./apps/frontend
+    build:
+      command: npm install && npm run build
+    start:
+      command: npm run start
+    env:
+      - NODE_ENV=production
+    ports:
+      - 3000
+    static:
+      folder: .next
+
+  backend:
+    type: api
+    path: ./apps/backend
+    build:
+      command: npm install && npm run build
+    start:
+      command: npm run start
+    env:
+      - NODE_ENV=production
+    ports:
+      - 8080
