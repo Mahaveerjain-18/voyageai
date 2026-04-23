@@ -1,4 +1,10 @@
-const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8080';
+// In production, we use Next.js rewrites to proxy /api/* to the backend.
+// This avoids the NEXT_PUBLIC_* build-time baking issue.
+// In dev, fallback to localhost:8080.
+const API_BASE =
+  typeof window !== "undefined"
+    ? "" // browser: use relative URL, Next.js rewrites will proxy
+    : process.env.API_URL || process.env.NEXT_PUBLIC_API_URL || "http://localhost:8080";
 
 export interface ResearchOption {
   id: string;

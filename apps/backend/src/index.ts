@@ -22,7 +22,11 @@ const app = express();
 const PORT = parseInt(process.env.PORT || '8080', 10);
 
 // ─── Middleware ───────────────────────────────────────────────
-app.use(cors());
+app.use(cors({
+  origin: '*',
+  methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
+}));
 app.use(express.json());
 
 // ─── Request logging ─────────────────────────────────────────
